@@ -267,7 +267,7 @@ install(TARGETS ${googleapis_cpp_installed_libraries_list}
 
 foreach (target ${googleapis_cpp_installed_libraries_list})
     google_cloud_cpp_install_proto_library_headers("${target}")
-    google_cloud_cpp_install_proto_library_protos("${target}")
+    google_cloud_cpp_install_proto_library_protos("${target}" "${GOOGLEAPIS_CPP_SOURCE}")
 endforeach ()
 
 # Export the CMake targets to make it easy to create configuration files.

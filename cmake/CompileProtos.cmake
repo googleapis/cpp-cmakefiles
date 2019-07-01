@@ -221,22 +221,22 @@ function (google_cloud_cpp_install_proto_library_headers target)
 endfunction ()
 
 # Install protos for a C++ proto library.
-function (google_cloud_cpp_install_proto_library_protos target)
+function (google_cloud_cpp_install_proto_library_protos target strip_prefix)
     get_target_property(target_protos ${target} PROTO_SOURCES)
-    foreach (header ${target_protos})
+    foreach (proto ${target_protos})
         # Skip anything that is not a header file.
-        if (NOT "${header}" MATCHES "\\.proto$")
+        if (NOT "${proto}" MATCHES "\\.proto$")
             continue()
         endif ()
-        string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/"
-                       ""
-                       relative
-                       "${header}")
+	string(REPLACE "${strip_prefix}/"
+		       ""
+		       relative
+		       "${proto}")
         get_filename_component(dir "${relative}" DIRECTORY)
         # This is modeled after the Protobuf library, it installs the basic
         # protos (think google/protobuf/any.proto) in the include directory for
         # C/C++ code. :shrug:
-        install(FILES "${header}" DESTINATION
+        install(FILES "${proto}" DESTINATION
                       "${CMAKE_INSTALL_INCLUDEDIR}/${dir}")
     endforeach ()
 endfunction ()
