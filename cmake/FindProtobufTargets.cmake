@@ -99,14 +99,14 @@ if (protobuf_FOUND)
                    "ProtobufTargets_FOUND = ${ProtobufTargets_FOUND}"
                    " ProtobufTargets_VERSION = ${ProtobufTargets_VERSION}")
     endif ()
-else()
+else ()
     find_package(Protobuf QUIET)
     if (Protobuf_FOUND)
         set(ProtobufTargets_FOUND 1)
         set(ProtobufTargets_VERSION ${Protobuf_VERSION})
 
         if (NOT TARGET protobuf::libprotobuf)
-            add_library(protobuf::libprotobuf INTERFACE IMPORTED)
+            add_library(protobuf::libprotobuf IMPORTED INTERFACE)
             set_property(TARGET protobuf::libprotobuf
                          PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                                   ${Protobuf_INCLUDE_DIR})
@@ -117,7 +117,7 @@ else()
         endif ()
 
         if (NOT TARGET protobuf::libprotobuf-lite)
-            add_library(protobuf::libprotobuf-lite INTERFACE IMPORTED)
+            add_library(protobuf::libprotobuf-lite IMPORTED INTERFACE)
             set_property(TARGET protobuf::libprotobuf-lite
                          PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                                   ${Protobuf_INCLUDE_DIR})
@@ -128,7 +128,7 @@ else()
         endif ()
 
         if (NOT TARGET protobuf::libprotoc)
-            add_library(protobuf::libprotoc INTERFACE IMPORTED)
+            add_library(protobuf::libprotoc IMPORTED INTERFACE)
             set_property(TARGET protobuf::libprotoc
                          PROPERTY INTERFACE_INCLUDE_DIRECTORIES
                                   ${Protobuf_INCLUDE_DIR})
