@@ -83,7 +83,6 @@ if [[ -z "${PROJECT_ROOT+x}" ]]; then
   readonly PROJECT_ROOT="$(cd "$(dirname "$0")/../../.."; pwd)"
 fi
 source "${PROJECT_ROOT}/ci/kokoro/define-docker-variables.sh"
-source "${PROJECT_ROOT}/ci/define-dump-log.sh"
 
 echo "================================================================"
 cd "${PROJECT_ROOT}"
@@ -106,7 +105,7 @@ echo "Logging to ${CREATE_DOCKER_IMAGE_LOG}"
 if ! "${PROJECT_ROOT}/ci/retry-command.sh" \
        "${PROJECT_ROOT}/ci/kokoro/create-docker-image.sh" \
          >"${CREATE_DOCKER_IMAGE_LOG}" 2>&1 </dev/null; then
-  dump_log "${CREATE_DOCKER_IMAGE_LOG}"
+  cat "${CREATE_DOCKER_IMAGE_LOG}"
   exit 1
 fi
 echo "Docker image created $(date)."
@@ -213,16 +212,3 @@ fi
 sudo docker run "${docker_flags[@]}" "${IMAGE}:tip" \
      "/v/${in_docker_script}" "${CMAKE_SOURCE_DIR}" \
      "${BUILD_OUTPUT}"
-
-exit_status=$?
-echo "Build finished with ${exit_status} exit status $(date)."
-echo "================================================================"
-
-if [[ "${exit_status}" != 0 ]]; then
-  echo "================================================================"
-  echo "Build failed, printing out logs $(date)."
-  "${PROJECT_ROOT}/ci/kokoro/dump-logs.sh"
-  echo "================================================================"
-fi
-
-exit ${exit_status}
