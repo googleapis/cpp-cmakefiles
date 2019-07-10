@@ -15,48 +15,27 @@
 
 set -eu
 
-# Fetch the latest release
-git clone -b "$(curl -L https://grpc.io/release)" https://github.com/grpc/grpc
-cd grpc
-git submodule update --init
-
-# Install c-ares
-cd third_party/cares/cares
-git fetch origin
-git checkout cares-1_15_0
-mkdir -p cmake/build
-cd cmake/build
-cmake -DCMAKE_BUILD_TYPE=Release ../..
-make -j "$(nproc)" install
-cd ../../../../..
-rm -rf third_party/cares/cares  # wipe out to prevent influencing the grpc build
-
-# Install zlib
-cd third_party/zlib
-mkdir -p cmake/build
-cd cmake/build
-cmake -DCMAKE_BUILD_TYPE=Release ../..
-make -j "$(nproc)" install
-cd ../../../..
-rm -rf third_party/zlib  # wipe out to prevent influencing the grpc build
+mkdir -p /var/tmp/Downloads
+cd /var/tmp/Downloads
 
 # Install protobuf
-cd third_party/protobuf
-mkdir -p cmake/build
-cd cmake/build
-cmake -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release ..
-make -j "$(nproc)" install
-cd ../../../..
-rm -rf third_party/protobuf  # wipe out to prevent influencing the grpc build
+wget -q https://github.com/google/protobuf/archive/v3.8.0.tar.gz
+tar -xf v3.8.0.tar.gz
+(cd protobuf-3.8.0/cmake;
+ cmake \
+   -DCMAKE_BUILD_TYPE=Release \
+   -DBUILD_SHARED_LIBS=yes \
+   -Dprotobuf_BUILD_TESTS=OFF \
+   -H. -Bcmake-out
+ cmake --build cmake-out --target install -- -j "$(nproc)"
+ ldconfig
+)
 
-
-mkdir build
-cd build
-cmake -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF \
-  -DgRPC_PROTOBUF_PROVIDER=package -DgRPC_ZLIB_PROVIDER=package \
-  -DgRPC_CARES_PROVIDER=package -DgRPC_SSL_PROVIDER=package \
-  -DCMAKE_BUILD_TYPE=Release ..
-make -j "$(nproc)" install
-
-# Workaround for wrong header location
-ln -s /usr/local/include/google /usr/include/google
+# Install grpc
+wget -q https://github.com/grpc/grpc/archive/v1.22.0.tar.gz
+tar -xf v1.22.0.tar.gz
+(cd grpc-1.22.0;
+ make -j "$(nproc)"
+ make install
+ ldconfig
+)

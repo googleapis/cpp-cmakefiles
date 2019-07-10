@@ -56,6 +56,10 @@ if [[ "${BUILD_NAME}" = "clang-tidy" ]]; then
 elif [[ "${BUILD_NAME}" = "ubuntu-18.04" ]]; then
   export CC=gcc
   export CXX=g++
+elif [[ "${BUILD_NAME}" = "ubuntu-16.04" ]]; then
+  export DISTRO_VERSION=16.04
+  export CC=gcc
+  export CXX=g++
 elif [[ "${BUILD_NAME}" = "gcc-4.8" ]]; then
   # The oldest version of GCC we support is 4.8, this build checks the code
   # against that version. The use of CentOS 7 for that build is not a

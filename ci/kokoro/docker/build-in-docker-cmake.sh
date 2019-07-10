@@ -44,7 +44,7 @@ echo "================================================================"
 echo "Compiling on $(date)"
 echo "================================================================"
 cd "${PROJECT_ROOT}"
-cmake_flags=("")
+cmake_flags=()
 if [[ "${CLANG_TIDY:-}" = "yes" ]]; then
   cmake_flags+=("-DGOOGLE_CLOUD_CPP_CLANG_TIDY=yes")
 fi
@@ -58,7 +58,12 @@ if [[ "${CODE_COVERAGE:-}" == "yes" ]]; then
     "-DCMAKE_BUILD_TYPE=Coverage")
 fi
 
-cmake "-H${SOURCE_DIR}" "-B${BINARY_DIR}" "${cmake_flags[@]}"
+# Avoid unbound variable error with older bash
+if [[ "${#cmake_flags[@]}" == 0 ]]; then
+  cmake "-H${SOURCE_DIR}" "-B${BINARY_DIR}"
+else
+  cmake "-H${SOURCE_DIR}" "-B${BINARY_DIR}" "${cmake_flags[@]}"
+fi
 cmake --build "${BINARY_DIR}" -- -j "$(nproc)"
 
 # When user a super-build the tests are hidden in a subdirectory. We can tell
