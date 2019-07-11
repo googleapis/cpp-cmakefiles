@@ -95,7 +95,7 @@ function (_grpc_fix_grpc_cpp_plugin_target)
             set_property(TARGET gRPC::grpc_cpp_plugin
                          PROPERTY IMPORTED_LOCATION
                                   ${_gRPC_CPP_PLUGIN_EXECUTABLE})
-        else()
+        else ()
             set(gRPC_FOUND "grpc_cpp_plugin-NOTFOUND")
         endif ()
     endif ()
@@ -140,7 +140,7 @@ function (_gRPC_find_library name filename)
     if (${name}_LIBRARY)
         # Use result recorded by a previous call.
         return()
-    else()
+    else ()
         find_library(${name}_LIBRARY_RELEASE NAMES ${filename})
         mark_as_advanced(${name}_LIBRARY_RELEASE)
 
@@ -171,7 +171,7 @@ if (_gRPC_USE_STATIC_LIBS)
     set(_gRPC_ORIG_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
     if (WIN32)
         set(CMAKE_FIND_LIBRARY_SUFFIXES .lib .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
-    else()
+    else ()
         set(CMAKE_FIND_LIBRARY_SUFFIXES .a)
     endif ()
 endif ()
@@ -195,7 +195,7 @@ endif ()
 
 if (_gRPC_grpc_LIBRARY)
     if (NOT TARGET gRPC::grpc)
-        add_library(gRPC::grpc UNKNOWN IMPORTED)
+        add_library(gRPC::grpc IMPORTED UNKNOWN)
         set_target_properties(gRPC::grpc
                               PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
                                          "${_gRPC_INCLUDE_DIR}")
@@ -229,7 +229,7 @@ endif ()
 
 if (_gRPC_grpc++_LIBRARY)
     if (NOT TARGET gRPC::grpc++)
-        add_library(gRPC::grpc++ UNKNOWN IMPORTED)
+        add_library(gRPC::grpc++ IMPORTED UNKNOWN)
         set_target_properties(gRPC::grpc++
                               PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
                                          "${_gRPC++_INCLUDE_DIR}")
@@ -266,17 +266,17 @@ if (_gRPC_grpc++_LIBRARY)
             set_property(TARGET gRPC::grpc++
                          APPEND
                          PROPERTY INTERFACE_COMPILE_FEATURES cxx_std_11)
-        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
             # CMake 3.5 is still alive and kicking in some older distros, use
             # the compiler-specific versions in these cases.
             set_property(TARGET gRPC::grpc++
                          APPEND
                          PROPERTY INTERFACE_COMPILE_OPTIONS "-std=c++11")
-        elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
             set_property(TARGET gRPC::grpc++
                          APPEND
                          PROPERTY INTERFACE_COMPILE_OPTIONS "-std=c++11")
-        else()
+        else ()
             message(
                 WARNING
                     "gRPC::grpc++ requires C++11, but this module"

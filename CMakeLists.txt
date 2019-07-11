@@ -45,7 +45,7 @@ set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
     "6b8a9b2bcb4476e9a5a9872869996f0d639c8d5df76dd8a893e79201f211b1cf")
 
 include(ExternalProject)
-externalproject_add(googleapis_download
+ExternalProject_Add(googleapis_download
                     EXCLUDE_FROM_ALL ON
                     PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
                     URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
@@ -54,7 +54,7 @@ externalproject_add(googleapis_download
                     BUILD_COMMAND ""
                     INSTALL_COMMAND ""
                     LOG_DOWNLOAD OFF)
-externalproject_get_property(googleapis_download SOURCE_DIR)
+ExternalProject_Get_Property(googleapis_download SOURCE_DIR)
 set(GOOGLEAPIS_CPP_SOURCE "${SOURCE_DIR}")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
@@ -267,7 +267,8 @@ install(TARGETS ${googleapis_cpp_installed_libraries_list}
 
 foreach (target ${googleapis_cpp_installed_libraries_list})
     google_cloud_cpp_install_proto_library_headers("${target}")
-    google_cloud_cpp_install_proto_library_protos("${target}" "${GOOGLEAPIS_CPP_SOURCE}")
+    google_cloud_cpp_install_proto_library_protos("${target}"
+                                                  "${GOOGLEAPIS_CPP_SOURCE}")
 endforeach ()
 
 # Export the CMake targets to make it easy to create configuration files.
@@ -275,15 +276,12 @@ install(EXPORT googleapis-targets
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis")
 
 # Setup global variables used in the following *.in files.
-set(
-    GOOGLE_CLOUD_CPP_CONFIG_VERSION_MAJOR ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR}
-    )
-set(
-    GOOGLE_CLOUD_CPP_CONFIG_VERSION_MINOR ${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR}
-    )
-set(
-    GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH ${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH}
-    )
+set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MAJOR
+    ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR})
+set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_MINOR
+    ${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR})
+set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH
+    ${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH})
 
 # Use a function to create a scope for the variables.
 function (googleapis_cpp_install_pc target)
@@ -322,8 +320,8 @@ function (googleapis_cpp_install_pc target)
     string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES ${_target_pc_requires})
     set(GOOGLE_CLOUD_CPP_PC_LIBS "-l${target}")
     configure_file("cmake/config.pc.in" "${target}.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${target}.pc" DESTINATION
-                  "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${target}.pc"
+            DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 endfunction ()
 
 # Create and install the pkg-config files.
@@ -355,8 +353,8 @@ string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
               " libcares")
 set(GOOGLE_CLOUD_CPP_PC_LIBS "")
 configure_file("cmake/config.pc.in" "googleapis.pc" @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis.pc" DESTINATION
-              "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis.pc"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
 # Create and install the CMake configuration files.
 configure_file("cmake/config.cmake.in" "googleapis-config.cmake" @ONLY)
@@ -367,5 +365,4 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis-config.cmake"
               "${PROJECT_SOURCE_DIR}/cmake/FindgRPC.cmake"
               "${PROJECT_SOURCE_DIR}/cmake/FindProtobufTargets.cmake"
               "${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake"
-              DESTINATION
-              "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis")
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis")
