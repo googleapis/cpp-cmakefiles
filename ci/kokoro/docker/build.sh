@@ -35,13 +35,13 @@ elif [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
   BUILD_NAME="$(basename "${KOKORO_JOB_NAME}" "-presubmit")"
   export BUILD_NAME
 else
- echo "Aborting build as the build name is not defined."
- echo "If you are invoking this script via the command line use:"
- echo "    $0 <build-name>"
- echo
- echo "If this script is invoked by Kokoro, the CI system is expected to set"
- echo "the KOKORO_JOB_NAME environment variable."
- exit 1
+  echo "Aborting build as the build name is not defined."
+  echo "If you are invoking this script via the command line use:"
+  echo "    $0 <build-name>"
+  echo
+  echo "If this script is invoked by Kokoro, the CI system is expected to set"
+  echo "the KOKORO_JOB_NAME environment variable."
+  exit 1
 fi
 
 if [[ "${BUILD_NAME}" = "clang-tidy" ]]; then
@@ -214,5 +214,5 @@ if [[ -t 0 ]]; then
 fi
 
 sudo docker run "${docker_flags[@]}" "${IMAGE}:tip" \
-     "/v/${in_docker_script}" "${CMAKE_SOURCE_DIR}" \
-     "${BUILD_OUTPUT}"
+    "/v/${in_docker_script}" "${CMAKE_SOURCE_DIR}" \
+    "${BUILD_OUTPUT}"
