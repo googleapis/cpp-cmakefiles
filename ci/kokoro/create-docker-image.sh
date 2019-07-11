@@ -23,6 +23,13 @@ fi
 source "${PROJECT_ROOT}/ci/kokoro/define-docker-variables.sh"
 
 cd "${PROJECT_ROOT}"
-sudo docker build -t "${IMAGE}:tip" \
-     --build-arg DISTRO_VERSION="${DISTRO_VERSION}" \
-     -f "ci/kokoro/Dockerfile.${DISTRO}" ci
+
+# If there's a version specific Dockerfile, we use it.
+if [[ -f "ci/kokoro/Dockerfile.${DISTRO}-${DISTRO_VERSION}" ]]; then
+  sudo docker build -t "${IMAGE}:tip" \
+      -f "ci/kokoro/Dockerfile.${DISTRO}-${DISTRO_VERSION}" ci
+else
+  sudo docker build -t "${IMAGE}:tip" \
+      --build-arg DISTRO_VERSION="${DISTRO_VERSION}" \
+      -f "ci/kokoro/Dockerfile.${DISTRO}" ci
+fi
