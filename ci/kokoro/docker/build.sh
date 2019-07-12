@@ -102,7 +102,7 @@ echo "Building with $(nproc) cores $(date) on ${PWD}."
 
 echo "================================================================"
 echo "Capture Docker version to troubleshoot $(date)."
-sudo docker version
+docker version
 echo "================================================================"
 
 has_cache="false"
@@ -139,10 +139,10 @@ fi
 update_cache="false"
 echo "================================================================"
 echo "Creating Docker image with all the development tools $(date)."
-if ci/retry-command.sh sudo docker build "${docker_build_flags[@]}" ci; then
+if ci/retry-command.sh docker build "${docker_build_flags[@]}" ci; then
   update_cache="true"
   echo "Docker image created $(date)."
-  sudo docker image ls | grep "${IMAGE}"
+  docker image ls | grep "${IMAGE}"
 else
   echo "Failed creating Docker image $(date)."
   if "${has_cache}"; then
@@ -260,6 +260,6 @@ if [[ -t 0 ]]; then
   docker_flags+=("-it")
 fi
 
-sudo docker run "${docker_flags[@]}" "${IMAGE}:latest" \
+docker run "${docker_flags[@]}" "${IMAGE}:latest" \
     "/v/${in_docker_script}" "${CMAKE_SOURCE_DIR}" \
     "${BUILD_OUTPUT}"
