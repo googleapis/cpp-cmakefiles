@@ -86,7 +86,15 @@ fi
 if [[ -z "${PROJECT_ROOT+x}" ]]; then
   readonly PROJECT_ROOT="$(cd "$(dirname "$0")/../../.."; pwd)"
 fi
-source "${PROJECT_ROOT}/ci/kokoro/define-docker-variables.sh"
+
+if [[ -z "${PROJECT_ID+x}" ]]; then
+  readonly PROJECT_ID="cloud-devrel-kokoro-resources"
+fi
+
+# Determine the image name.
+readonly IMAGE="gcr.io/${PROJECT_ID}/cpp-cmakefiles/${DISTRO}-${DISTRO_VERSION}"
+readonly BUILD_OUTPUT="cmake-out/${BUILD_NAME}"
+readonly BUILD_HOME="cmake-out/home/${BUILD_NAME}"
 
 echo "================================================================"
 cd "${PROJECT_ROOT}"
@@ -97,24 +105,62 @@ echo "Capture Docker version to troubleshoot $(date)."
 sudo docker version
 echo "================================================================"
 
+has_cache="false"
+
+if [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
+  # Download the docker image from the previous build on kokoro for speed.
+  echo "================================================================"
+  echo "Downloading Docker image $(date)."
+  gcloud auth configure-docker
+  if docker pull "${IMAGE}:latest"; then
+    echo "Existing image successfully downloaded."
+    has_cache="true"
+  fi
+  echo "================================================================"
+fi
+
+docker_build_flags=(
+  "-t" "${IMAGE}:latest"
+)
+
+if [[ -f "ci/kokoro/Dockerfile.${DISTRO}-${DISTRO_VERSION}" ]]; then
+  docker_build_flags+=("-f" "ci/kokoro/Dockerfile.${DISTRO}-${DISTRO_VERSION}")
+else
+  docker_build_flags+=(
+    "-f" "ci/kokoro/Dockerfile.${DISTRO}"
+    "--build-arg" "DISTRO_VERSION=${DISTRO_VERSION}"
+  )
+fi
+
+if "${has_cache}"; then
+  docker_build_flags+=("--cache-from=${IMAGE}:latest")
+fi
+
+update_cache="false"
 echo "================================================================"
 echo "Creating Docker image with all the development tools $(date)."
-# We do not want to print the log unless there is an error, so disable the -e
-# flag. Later, we will want to print out the emulator(s) logs *only* if there
-# is an error, so disabling from this point on is the right choice.
-set +e
-mkdir -p "${BUILD_OUTPUT}"
-readonly CREATE_DOCKER_IMAGE_LOG="${BUILD_OUTPUT}/create-build-docker-image.log"
-echo "Logging to ${CREATE_DOCKER_IMAGE_LOG}"
-if ! "${PROJECT_ROOT}/ci/retry-command.sh" \
-       "${PROJECT_ROOT}/ci/kokoro/create-docker-image.sh" \
-         >"${CREATE_DOCKER_IMAGE_LOG}" 2>&1 </dev/null; then
-  cat "${CREATE_DOCKER_IMAGE_LOG}"
-  exit 1
+if ci/retry-command.sh sudo docker build "${docker_build_flags[@]}" ci; then
+  update_cache="true"
+  echo "Docker image created $(date)."
+  sudo docker image ls | grep "${IMAGE}"
+else
+  echo "Failed creating Docker image $(date)."
+  if "${has_cache}"; then
+    echo "Continue the build with the cache."
+  else
+    exit 1   
+  fi
 fi
-echo "Docker image created $(date)."
-sudo docker image ls
 echo "================================================================"
+
+if [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
+  # Upload the docker image for speeding up the future builds.
+  echo "================================================================"
+  echo "Uploading Docker image $(date)."
+  docker push "${IMAGE}:latest" || true
+  echo "================================================================"
+fi
+
 
 echo "================================================================"
 echo "Running the full build $(date)."
@@ -130,6 +176,7 @@ fi
 
 # Make sure the user has a $HOME directory inside the Docker container.
 mkdir -p "${BUILD_HOME}"
+mkdir -p "${BUILD_OUTPUT}"
 
 # We use an array for the flags so they are easier to document.
 docker_flags=(
@@ -213,6 +260,6 @@ if [[ -t 0 ]]; then
   docker_flags+=("-it")
 fi
 
-sudo docker run "${docker_flags[@]}" "${IMAGE}:tip" \
+sudo docker run "${docker_flags[@]}" "${IMAGE}:latest" \
     "/v/${in_docker_script}" "${CMAKE_SOURCE_DIR}" \
     "${BUILD_OUTPUT}"
