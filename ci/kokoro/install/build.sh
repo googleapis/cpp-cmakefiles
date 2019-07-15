@@ -28,13 +28,13 @@ elif [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
   DISTRO="$(basename "${KOKORO_JOB_NAME}" "-presubmit")"
   export DISTRO
 else
- echo "Aborting build as the distribution name is not defined."
- echo "If you are invoking this script via the command line use:"
- echo "    $0 <distro-name>"
- echo
- echo "If this script is invoked by Kokoro, the CI system is expected to set"
- echo "the KOKORO_JOB_NAME environment variable."
- exit 1
+  echo "Aborting build as the distribution name is not defined."
+  echo "If you are invoking this script via the command line use:"
+  echo "    $0 <distro-name>"
+  echo
+  echo "If this script is invoked by Kokoro, the CI system is expected to set"
+  echo "the KOKORO_JOB_NAME environment variable."
+  exit 1
 fi
 
 echo "================================================================"
