@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <iostream>
-
-#include <google/spanner/v1/spanner.pb.h>
-#include <google/bigtable/v2/bigtable.pb.h>
+#include <google/bigtable/v2/bigtable.grpc.pb.h>
+#include <grpcpp/grpcpp.h>
 
 int main() {
-  std::cout << "Hello" << "\n";
+  auto creds = grpc::InsecureChannelCredentials();
+  auto channel = grpc::CreateChannel("localhost:12345", creds);
+  auto stub = google::bigtable::v2::Bigtable::NewStub(channel);
 }

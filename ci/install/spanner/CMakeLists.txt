@@ -25,5 +25,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(googleapis REQUIRED)
 
 add_executable(utilize-googleapis main.cc)
-target_link_libraries(utilize-googleapis googleapis_cpp_bigtable_protos
-                      googleapis_cpp_spanner_protos)
+target_link_libraries(utilize-googleapis googleapis-c++::spanner_protos)

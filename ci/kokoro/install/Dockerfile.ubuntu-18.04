@@ -80,8 +80,16 @@ RUN cmake --build . --target install
 
 ## [END INSTALL.md]
 
-# Verify that the installed files are actually usable
-WORKDIR /home/build/test-install-cmake
-COPY ci/install /home/build/test-install-cmake
+# Verify that the installed files are actually usable for bigtable
+WORKDIR /home/build/test-install-bigtable
+COPY ci/install/bigtable /home/build/test-install-bigtable
 RUN cmake -H. -Bcmake-out
 RUN cmake --build cmake-out -- -j $(nproc)
+RUN cmake-out/utilize-googleapis
+
+# Verify that the installed files are actually usable for spanner
+WORKDIR /home/build/test-install-spanner
+COPY ci/install/spanner /home/build/test-install-spanner
+RUN cmake -H. -Bcmake-out
+RUN cmake --build cmake-out -- -j $(nproc)
+RUN cmake-out/utilize-googleapis
