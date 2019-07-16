@@ -24,7 +24,7 @@ cp -R /home/build/cpp-cmakefiles/ci/test-install/bigtable \
   /home/build/test-install-bigtable
 cd /home/build/test-install-bigtable
 cmake -H. -Bcmake-out
-cmake --build cmake-out -- -j $(nproc)
+cmake --build cmake-out -- -j "$(nproc)"
 cmake-out/utilize-googleapis
 
 # For spanner protos
@@ -32,5 +32,5 @@ cp -R /home/build/cpp-cmakefiles/ci/test-install/spanner \
   /home/build/test-install-spanner
 cd /home/build/test-install-spanner
 cmake -H. -Bcmake-out
-cmake --build cmake-out -- -j $(nproc)
+cmake --build cmake-out -- -j "$(nproc)"
 cmake-out/utilize-googleapis
