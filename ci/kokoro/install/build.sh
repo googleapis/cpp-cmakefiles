@@ -17,7 +17,7 @@
 set -eu
 
 if [[ $# -eq 1 ]]; then
-  export DISTRO="${1}"
+  export TEST_TARGET="${1}"
 elif [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
   # Kokoro injects the KOKORO_JOB_NAME environment variable, the value of this
   # variable is cloud-cpp/spanner/<config-file-name-without-cfg> (or more
@@ -25,8 +25,8 @@ elif [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
   # files `$foo.cfg` for continuous builds and `$foo-presubmit.cfg` for
   # presubmit builds. Here we extract the value of "foo" and use it as the build
   # name.
-  DISTRO="$(basename "${KOKORO_JOB_NAME}" "-presubmit")"
-  export DISTRO
+  TEST_TARGET="$(basename "${KOKORO_JOB_NAME}" "-presubmit")"
+  export TEST_TARGET
 else
   echo "Aborting build as the distribution name is not defined."
   echo "If you are invoking this script via the command line use:"
@@ -45,8 +45,8 @@ if [[ -z "${PROJECT_ID+x}" ]]; then
   readonly PROJECT_ID="cloud-devrel-kokoro-resources"
 fi
 
-readonly DEV_IMAGE="gcr.io/${PROJECT_ID}/cpp-cmakefiles/test-install-dev-${DISTRO}"
-readonly IMAGE="gcr.io/${PROJECT_ID}/cpp-cmakefiles/test-install-${DISTRO}"
+readonly DEV_IMAGE="gcr.io/${PROJECT_ID}/cpp-cmakefiles/test-install-dev-${TEST_TARGET}"
+readonly IMAGE="gcr.io/${PROJECT_ID}/cpp-cmakefiles/test-install-${TEST_TARGET}"
 
 has_cache="false"
 
@@ -56,7 +56,7 @@ has_cache="false"
 if [[ -n "${KOKORO_JOB_NAME:-}" ]] \
   && [[ -n "${KOKORO_GITHUB_PULL_REQUEST_NUMBER:-}" ]]; then
   echo "================================================================"
-  echo "Download existing image (if available) for ${DISTRO} $(date)."
+  echo "Download existing image (if available) for ${TEST_TARGET} $(date)."
   if docker pull "${DEV_IMAGE}:latest"; then
     echo "Existing image successfully downloaded."
     has_cache="true"
@@ -65,7 +65,7 @@ if [[ -n "${KOKORO_JOB_NAME:-}" ]] \
 fi
 
 echo "================================================================"
-echo "Build base image with minimal development tools for ${DISTRO} $(date)."
+echo "Build base image with minimal development tools for ${TEST_TARGET} $(date)."
 update_cache="false"
 
 devtools_flags=(
@@ -75,7 +75,7 @@ devtools_flags=(
   # Create the image with the same tag as the cache we are using, so we can
   # upload it.
   "-t" "${DEV_IMAGE}:latest"
-  "-f" "ci/kokoro/install/Dockerfile.${DISTRO}"
+  "-f" "ci/kokoro/install/Dockerfile.${TEST_TARGET}"
 )
 
 if "${has_cache}"; then
@@ -91,16 +91,16 @@ fi
 if "${update_cache}" && [[ -z "${KOKORO_GITHUB_PULL_REQUEST_NUMBER:-}" ]] \
   && [[ -n "${KOKORO_JOB_NAME:-}" ]]; then
   echo "================================================================"
-  echo "Uploading updated base image for ${DISTRO} $(date)."
+  echo "Uploading updated base image for ${TEST_TARGET} $(date)."
   # Do not stop the build on a failure to update the cache.
   docker push "${DEV_IMAGE}:latest" || true
 fi
 
 echo "================================================================"
-echo "Run validation script for INSTALL instructions on ${DISTRO}."
+echo "Run validation script for INSTALL instructions on ${TEST_TARGET}."
 docker build \
   "--cache-from=${DEV_IMAGE}:latest" \
   "--target=install" \
   -t "${IMAGE}" \
-  -f "ci/kokoro/install/Dockerfile.${DISTRO}" .
+  -f "ci/kokoro/install/Dockerfile.${TEST_TARGET}" .
 echo "================================================================"

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:18.04 AS devtools
+FROM ubuntu:16.04 AS devtools
 
 # Please keep the formatting in these commands, it is optimized to cut & paste
 # into the README.md file.
@@ -23,9 +23,25 @@ FROM ubuntu:18.04 AS devtools
 
 # ```bash
 RUN apt update && \
-    apt install -y build-essential cmake git gcc g++ cmake \
-        libc-ares-dev libc-ares2 libcurl4-openssl-dev libssl-dev make \
-        pkg-config tar wget zlib1g-dev
+    apt install -y automake build-essential cmake git gcc g++ cmake \
+        libcurl4-openssl-dev libssl-dev libtool make pkg-config tar wget \
+        zlib1g-dev
+# ```
+
+# #### c-ares
+
+# Recent versions of gRPC require c-ares >= 1.11, while Ubuntu-16.04
+# distributes c-ares-1.10. We can manually install a newer version
+# of c-ares:
+
+# ```bash
+WORKDIR /var/tmp/build
+RUN wget -q https://github.com/c-ares/c-ares/archive/cares-1_15_0.tar.gz
+RUN tar -xf cares-1_15_0.tar.gz
+WORKDIR /var/tmp/build/c-ares-cares-1_15_0
+RUN ./buildconf && ./configure && make -j $(nproc)
+RUN make install
+RUN ldconfig
 # ```
 
 # #### Protobuf
