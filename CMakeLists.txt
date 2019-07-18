@@ -44,18 +44,47 @@ set(
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
     "6b8a9b2bcb4476e9a5a9872869996f0d639c8d5df76dd8a893e79201f211b1cf")
 
+set(GOOGLEAPIS_CPP_SOURCE
+    "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
+
 include(ExternalProject)
-ExternalProject_Add(googleapis_download
-                    EXCLUDE_FROM_ALL ON
-                    PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
-                    URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
-                    URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
-                    CONFIGURE_COMMAND ""
-                    BUILD_COMMAND ""
-                    INSTALL_COMMAND ""
-                    LOG_DOWNLOAD OFF)
-ExternalProject_Get_Property(googleapis_download SOURCE_DIR)
-set(GOOGLEAPIS_CPP_SOURCE "${SOURCE_DIR}")
+ExternalProject_Add(
+    googleapis_download
+    EXCLUDE_FROM_ALL ON
+    PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
+    URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
+    URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    BUILD_BYPRODUCTS
+        "${GOOGLEAPIS_CPP_SOURCE}/google/api/http.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/api/annotations.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/api/auth.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/api/resource.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/type/expr.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/error_details.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/status.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/policy.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/iam_policy.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/longrunning/operations.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/bigtable_instance_admin.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/bigtable_table_admin.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/common.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/instance.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/table.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/v2/bigtable.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/v2/data.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/database/v1/spanner_database_admin.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/instance/v1/spanner_instance_admin.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/keys.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/mutation.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/query_plan.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/result_set.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/spanner.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/transaction.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/type.proto"
+    LOG_DOWNLOAD OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(ProtobufTargets REQUIRED)
