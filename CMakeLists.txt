@@ -61,6 +61,7 @@ ExternalProject_Add(
         "${GOOGLEAPIS_CPP_SOURCE}/google/api/http.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/api/annotations.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/api/auth.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/api/client.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/api/resource.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/type/expr.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/error_details.proto"
@@ -146,6 +147,16 @@ google_cloud_cpp_grpcpp_library(googleapis_cpp_api_auth_protos
 googleapis_cpp_set_version_and_alias(api_auth_protos)
 target_link_libraries(googleapis_cpp_api_auth_protos
                       PUBLIC googleapis-c++::api_annotations_protos
+                      PRIVATE googleapis_cpp_common_flags)
+
+google_cloud_cpp_grpcpp_library(
+    googleapis_cpp_api_client_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/api/client.proto"
+    PROTO_PATH_DIRECTORIES
+    "${GOOGLEAPIS_CPP_SOURCE}"
+    "${PROTO_INCLUDE_DIR}")
+googleapis_cpp_set_version_and_alias(api_client_protos)
+target_link_libraries(googleapis_cpp_api_client_protos
                       PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
