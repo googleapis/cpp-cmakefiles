@@ -26,6 +26,7 @@ foreach (_target
          api_http
          api_resource
          bigtable
+	 devtools_cloudtrace_v2_trace
          iam_v1_iam_policy
          iam_v1_policy
          longrunning_operations
