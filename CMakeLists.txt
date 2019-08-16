@@ -64,6 +64,7 @@ ExternalProject_Add(
         "${GOOGLEAPIS_CPP_SOURCE}/google/api/client.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/api/resource.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/trace.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/tracing.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/type/expr.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/error_details.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/status.proto"
@@ -293,6 +294,19 @@ target_link_libraries(googleapis_cpp_devtools_cloudtrace_v2_trace_protos
                              googleapis-c++::rpc_status_protos
                       PRIVATE googleapis_cpp_common_flags)
 
+google_cloud_cpp_grpcpp_library(
+    googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/tracing.proto"
+    PROTO_PATH_DIRECTORIES
+    "${GOOGLEAPIS_CPP_SOURCE}"
+    "${PROTO_INCLUDE_DIR}")
+googleapis_cpp_set_version_and_alias(devtools_cloudtrace_v2_tracing_protos)
+target_link_libraries(googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
+                      PUBLIC googleapis-c++::devtools_cloudtrace_v2_trace_protos
+                             googleapis-c++::api_annotations_protos
+                             googleapis-c++::rpc_status_protos
+                      PRIVATE googleapis_cpp_common_flags)
+
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
 include(GNUInstallDirs)
@@ -306,6 +320,7 @@ set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_api_auth_protos
     googleapis_cpp_api_resource_protos
     googleapis_cpp_devtools_cloudtrace_v2_trace_protos
+    googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
     googleapis_cpp_iam_v1_policy_protos
     googleapis_cpp_iam_v1_iam_policy_protos
     googleapis_cpp_rpc_error_details_protos
