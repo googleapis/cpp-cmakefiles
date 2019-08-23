@@ -39,10 +39,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # downloaded from GitHub.
 set(
     GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-    "https://github.com/googleapis/googleapis/archive/a8ee1416f4c588f2ab92da72e7c1f588c784d3e6.tar.gz"
+    "https://github.com/googleapis/googleapis/archive/9c9f778aedde02f9826d2ae5d0f9c96409ba0f25.tar.gz"
     )
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
-    "6b8a9b2bcb4476e9a5a9872869996f0d639c8d5df76dd8a893e79201f211b1cf")
+    "13af135d8cc9b81b47d6fbfc258fe790a151956d06e01fd16671aa49fe536ab1")
 
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
@@ -68,6 +68,7 @@ ExternalProject_Add(
         "${GOOGLEAPIS_CPP_SOURCE}/google/type/expr.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/error_details.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/status.proto"
+        "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/options.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/policy.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/iam_policy.proto"
         "${GOOGLEAPIS_CPP_SOURCE}/google/longrunning/operations.proto"
@@ -203,6 +204,17 @@ target_link_libraries(googleapis_cpp_rpc_status_protos
                       PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
+    googleapis_cpp_iam_v1_options_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/options.proto"
+    PROTO_PATH_DIRECTORIES
+    "${GOOGLEAPIS_CPP_SOURCE}"
+    "${PROTO_INCLUDE_DIR}")
+googleapis_cpp_set_version_and_alias(iam_v1_options_protos)
+target_link_libraries(googleapis_cpp_iam_v1_options_protos
+                      PUBLIC googleapis-c++::api_annotations_protos
+                      PRIVATE googleapis_cpp_common_flags)
+
+google_cloud_cpp_grpcpp_library(
     googleapis_cpp_iam_v1_policy_protos
     "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/policy.proto"
     PROTO_PATH_DIRECTORIES
@@ -224,6 +236,8 @@ google_cloud_cpp_grpcpp_library(
 googleapis_cpp_set_version_and_alias(iam_v1_iam_policy_protos)
 target_link_libraries(googleapis_cpp_iam_v1_iam_policy_protos
                       PUBLIC googleapis-c++::api_annotations_protos
+                             googleapis-c++::api_client_protos
+                             googleapis-c++::iam_v1_options_protos
                              googleapis-c++::iam_v1_policy_protos
                       PRIVATE googleapis_cpp_common_flags)
 
@@ -318,9 +332,11 @@ set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_api_http_protos
     googleapis_cpp_api_annotations_protos
     googleapis_cpp_api_auth_protos
+    googleapis_cpp_api_client_protos
     googleapis_cpp_api_resource_protos
     googleapis_cpp_devtools_cloudtrace_v2_trace_protos
     googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
+    googleapis_cpp_iam_v1_options_protos
     googleapis_cpp_iam_v1_policy_protos
     googleapis_cpp_iam_v1_iam_policy_protos
     googleapis_cpp_rpc_error_details_protos
@@ -407,6 +423,7 @@ set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
 string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
               "googleapis_cpp_bigtable_protos"
               " googleapis_cpp_iam_v1_iam_policy_protos"
+              " googleapis_cpp_iam_v1_options_protos"
               " googleapis_cpp_iam_v1_policy_protos"
               " googleapis_cpp_longrunning_operations_protos"
               " googleapis_cpp_api_auth_protos"
