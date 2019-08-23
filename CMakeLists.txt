@@ -236,6 +236,7 @@ google_cloud_cpp_grpcpp_library(
 googleapis_cpp_set_version_and_alias(iam_v1_iam_policy_protos)
 target_link_libraries(googleapis_cpp_iam_v1_iam_policy_protos
                       PUBLIC googleapis-c++::api_annotations_protos
+                             googleapis-c++::api_client_protos
                              googleapis-c++::iam_v1_options_protos
                              googleapis-c++::iam_v1_policy_protos
                       PRIVATE googleapis_cpp_common_flags)
@@ -331,6 +332,7 @@ set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_api_http_protos
     googleapis_cpp_api_annotations_protos
     googleapis_cpp_api_auth_protos
+    googleapis_cpp_api_client_protos
     googleapis_cpp_api_resource_protos
     googleapis_cpp_devtools_cloudtrace_v2_trace_protos
     googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
