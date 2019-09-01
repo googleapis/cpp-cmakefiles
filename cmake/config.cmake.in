@@ -38,7 +38,10 @@ foreach (_target
          type_expr)
     set(scoped_name "googleapis-c++::${_target}_protos")
     set(imported_name "googleapis_cpp_${_target}_protos")
-    add_library(${scoped_name} IMPORTED INTERFACE)
-    set_target_properties(${scoped_name}
-                          PROPERTIES INTERFACE_LINK_LIBRARIES ${imported_name})
+    if (NOT TARGET ${scoped_name})
+        add_library(${scoped_name} IMPORTED INTERFACE)
+        set_target_properties(${scoped_name}
+                              PROPERTIES INTERFACE_LINK_LIBRARIES
+                              ${imported_name})
+    endif ()
 endforeach ()
