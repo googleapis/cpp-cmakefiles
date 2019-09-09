@@ -47,48 +47,58 @@ set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
 
+set(GOOGLEAPIS_CPP_PROTO_FILES
+    "google/api/http.proto"
+    "google/api/annotations.proto"
+    "google/api/auth.proto"
+    "google/api/client.proto"
+    "google/api/label.proto"
+    "google/api/launch_stage.proto"
+    "google/api/metric.proto"
+    "google/api/monitored_resource.proto"
+    "google/api/resource.proto"
+    "google/devtools/cloudtrace/v2/trace.proto"
+    "google/devtools/cloudtrace/v2/tracing.proto"
+    "google/type/expr.proto"
+    "google/rpc/error_details.proto"
+    "google/rpc/status.proto"
+    "google/iam/v1/options.proto"
+    "google/iam/v1/policy.proto"
+    "google/iam/v1/iam_policy.proto"
+    "google/longrunning/operations.proto"
+    "google/bigtable/admin/v2/bigtable_instance_admin.proto"
+    "google/bigtable/admin/v2/bigtable_table_admin.proto"
+    "google/bigtable/admin/v2/common.proto"
+    "google/bigtable/admin/v2/instance.proto"
+    "google/bigtable/admin/v2/table.proto"
+    "google/bigtable/v2/bigtable.proto"
+    "google/bigtable/v2/data.proto"
+    "google/spanner/admin/database/v1/spanner_database_admin.proto"
+    "google/spanner/admin/instance/v1/spanner_instance_admin.proto"
+    "google/spanner/v1/keys.proto"
+    "google/spanner/v1/mutation.proto"
+    "google/spanner/v1/query_plan.proto"
+    "google/spanner/v1/result_set.proto"
+    "google/spanner/v1/spanner.proto"
+    "google/spanner/v1/transaction.proto"
+    "google/spanner/v1/type.proto")
+
+set(GOOGLEAPIS_CPP_BYPRODUCTS)
+foreach (proto ${GOOGLEAPIS_PROTO_FILES})
+    list(APPEND GOOGLEAPIS_CPP_BYPRODUCTS "${GOOGLEAPIS_CPP_SOURCE}/${proto}")
+endforeach ()
+
 include(ExternalProject)
-ExternalProject_Add(
-    googleapis_download
-    EXCLUDE_FROM_ALL ON
-    PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
-    URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
-    URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    BUILD_BYPRODUCTS
-        "${GOOGLEAPIS_CPP_SOURCE}/google/api/http.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/api/annotations.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/api/auth.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/api/client.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/api/resource.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/trace.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/tracing.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/type/expr.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/error_details.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/status.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/options.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/policy.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/iam_policy.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/longrunning/operations.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/bigtable_instance_admin.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/bigtable_table_admin.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/common.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/instance.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/table.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/v2/bigtable.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/v2/data.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/database/v1/spanner_database_admin.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/instance/v1/spanner_instance_admin.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/keys.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/mutation.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/query_plan.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/result_set.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/spanner.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/transaction.proto"
-        "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/type.proto"
-    LOG_DOWNLOAD OFF)
+ExternalProject_Add(googleapis_download
+                    EXCLUDE_FROM_ALL ON
+                    PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
+                    URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
+                    URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
+                    CONFIGURE_COMMAND ""
+                    BUILD_COMMAND ""
+                    INSTALL_COMMAND ""
+                    BUILD_BYPRODUCTS ${GOOGLEAPIS_CPP_BYPRODUCTS}
+                    LOG_DOWNLOAD OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(ProtobufTargets REQUIRED)
@@ -111,6 +121,47 @@ include(CompileProtos)
 
 google_cloud_cpp_add_protos_property()
 
+function (googleapis_cpp_short_name var proto)
+    string(REPLACE "google/"
+                   ""
+                   short_name
+                   "${proto}")
+    string(REPLACE "/"
+                   "_"
+                   short_name
+                   "${short_name}")
+    string(REPLACE ".proto"
+                   "_protos"
+                   short_name
+                   "${short_name}")
+    set("${var}" "${short_name}" PARENT_SCOPE)
+endfunction ()
+
+function (googleapis_cpp_add_library proto)
+    googleapis_cpp_short_name(short_name "${proto}")
+    google_cloud_cpp_grpcpp_library(googleapis_cpp_${short_name}
+                                    "${GOOGLEAPIS_CPP_SOURCE}/${proto}"
+                                    PROTO_PATH_DIRECTORIES
+                                    "${GOOGLEAPIS_CPP_SOURCE}"
+                                    "${PROTO_INCLUDE_DIR}")
+
+    googleapis_cpp_set_version_and_alias("${short_name}")
+
+    set(public_deps)
+    foreach (dep_short_name ${ARGN})
+        list(APPEND public_deps "googleapis-c++::${dep_short_name}")
+    endforeach ()
+    list(LENGTH public_deps public_deps_length)
+    if (public_deps_length EQUAL 0)
+        target_link_libraries("googleapis_cpp_${short_name}"
+                              PRIVATE googleapis_cpp_common_flags)
+    else ()
+        target_link_libraries("googleapis_cpp_${short_name}"
+                              PUBLIC ${public_deps}
+                              PRIVATE googleapis_cpp_common_flags)
+    endif ()
+endfunction ()
+
 function (googleapis_cpp_set_version_and_alias short_name)
     add_dependencies("googleapis_cpp_${short_name}" googleapis_download)
     set_target_properties("googleapis_cpp_${short_name}"
@@ -122,136 +173,38 @@ function (googleapis_cpp_set_version_and_alias short_name)
                 "googleapis_cpp_${short_name}")
 endfunction ()
 
-google_cloud_cpp_grpcpp_library(googleapis_cpp_api_http_protos
-                                "${GOOGLEAPIS_CPP_SOURCE}/google/api/http.proto"
-                                PROTO_PATH_DIRECTORIES
-                                "${GOOGLEAPIS_CPP_SOURCE}"
-                                "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(api_http_protos)
-target_link_libraries(googleapis_cpp_api_http_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/api/http.proto")
+googleapis_cpp_add_library("google/api/annotations.proto" api_http_protos)
+googleapis_cpp_add_library("google/api/auth.proto" api_annotations_protos)
+googleapis_cpp_add_library("google/api/client.proto")
+googleapis_cpp_add_library("google/api/resource.proto")
 
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_api_annotations_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/api/annotations.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(api_annotations_protos)
-target_link_libraries(googleapis_cpp_api_annotations_protos
-                      PUBLIC googleapis-c++::api_http_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/type/expr.proto")
 
-google_cloud_cpp_grpcpp_library(googleapis_cpp_api_auth_protos
-                                "${GOOGLEAPIS_CPP_SOURCE}/google/api/auth.proto"
-                                PROTO_PATH_DIRECTORIES
-                                "${GOOGLEAPIS_CPP_SOURCE}"
-                                "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(api_auth_protos)
-target_link_libraries(googleapis_cpp_api_auth_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/rpc/error_details.proto")
+googleapis_cpp_add_library("google/rpc/status.proto" rpc_error_details_protos)
 
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_api_client_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/api/client.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(api_client_protos)
-target_link_libraries(googleapis_cpp_api_client_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/iam/v1/options.proto" api_annotations_protos)
+googleapis_cpp_add_library("google/iam/v1/policy.proto"
+                           api_annotations_protos
+                           api_resource_protos
+                           type_expr_protos)
 
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_api_resource_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/api/resource.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(api_resource_protos)
-target_link_libraries(googleapis_cpp_api_resource_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/iam/v1/iam_policy.proto"
+                           api_annotations_protos
+                           api_client_protos
+                           iam_v1_options_protos
+                           iam_v1_policy_protos)
 
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_type_expr_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/type/expr.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(type_expr_protos)
-target_link_libraries(googleapis_cpp_type_expr_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/longrunning/operations.proto"
+                           api_annotations_protos rpc_status_protos)
 
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_rpc_error_details_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/error_details.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(rpc_error_details_protos)
-target_link_libraries(googleapis_cpp_rpc_error_details_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_rpc_status_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/rpc/status.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(rpc_status_protos)
-target_link_libraries(googleapis_cpp_rpc_status_protos
-                      PUBLIC googleapis-c++::rpc_error_details_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_iam_v1_options_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/options.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(iam_v1_options_protos)
-target_link_libraries(googleapis_cpp_iam_v1_options_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_iam_v1_policy_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/policy.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(iam_v1_policy_protos)
-target_link_libraries(googleapis_cpp_iam_v1_policy_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::api_resource_protos
-                             googleapis-c++::type_expr_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_iam_v1_iam_policy_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/iam/v1/iam_policy.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(iam_v1_iam_policy_protos)
-target_link_libraries(googleapis_cpp_iam_v1_iam_policy_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::api_client_protos
-                             googleapis-c++::iam_v1_options_protos
-                             googleapis-c++::iam_v1_policy_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_longrunning_operations_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/longrunning/operations.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(longrunning_operations_protos)
-target_link_libraries(googleapis_cpp_longrunning_operations_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::rpc_status_protos
-                      PRIVATE googleapis_cpp_common_flags)
+googleapis_cpp_add_library("google/devtools/cloudtrace/v2/trace.proto"
+                           api_annotations_protos rpc_status_protos)
+googleapis_cpp_add_library("google/devtools/cloudtrace/v2/tracing.proto"
+                           devtools_cloudtrace_v2_trace_protos
+                           api_annotations_protos
+                           rpc_status_protos)
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_bigtable_protos
@@ -294,31 +247,6 @@ target_link_libraries(googleapis_cpp_spanner_protos
                              googleapis-c++::longrunning_operations_protos
                              googleapis-c++::rpc_status_protos
                              googleapis-c++::iam_v1_iam_policy_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_devtools_cloudtrace_v2_trace_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/trace.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(devtools_cloudtrace_v2_trace_protos)
-target_link_libraries(googleapis_cpp_devtools_cloudtrace_v2_trace_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::rpc_status_protos
-                      PRIVATE googleapis_cpp_common_flags)
-
-google_cloud_cpp_grpcpp_library(
-    googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/devtools/cloudtrace/v2/tracing.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
-googleapis_cpp_set_version_and_alias(devtools_cloudtrace_v2_tracing_protos)
-target_link_libraries(googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
-                      PUBLIC googleapis-c++::devtools_cloudtrace_v2_trace_protos
-                             googleapis-c++::api_annotations_protos
-                             googleapis-c++::rpc_status_protos
                       PRIVATE googleapis_cpp_common_flags)
 
 # Install the libraries and headers in the locations determined by
