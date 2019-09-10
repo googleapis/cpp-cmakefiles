@@ -181,6 +181,12 @@ googleapis_cpp_add_library("google/api/http.proto")
 googleapis_cpp_add_library("google/api/annotations.proto" api_http_protos)
 googleapis_cpp_add_library("google/api/auth.proto" api_annotations_protos)
 googleapis_cpp_add_library("google/api/client.proto")
+googleapis_cpp_add_library("google/api/label.proto")
+googleapis_cpp_add_library("google/api/launch_stage.proto")
+googleapis_cpp_add_library("google/api/metric.proto" api_launch_stage_protos
+                           api_label_protos)
+googleapis_cpp_add_library("google/api/monitored_resource.proto"
+                           api_launch_stage_protos api_label_protos)
 googleapis_cpp_add_library("google/api/resource.proto")
 
 googleapis_cpp_add_library("google/type/expr.proto")
