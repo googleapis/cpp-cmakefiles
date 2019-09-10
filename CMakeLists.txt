@@ -139,8 +139,8 @@ endfunction ()
 
 # Create a single source proto library.
 #
-# - proto: the filename for the proto source.
-# - (optional) ARGN: proto libraries the new library depends on.
+# * proto: the filename for the proto source.
+# * (optional) ARGN: proto libraries the new library depends on.
 function (googleapis_cpp_add_library proto)
     googleapis_cpp_short_name(short_name "${proto}")
     google_cloud_cpp_grpcpp_library(googleapis_cpp_${short_name}
