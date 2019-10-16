@@ -73,6 +73,14 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/bigtable/admin/v2/table.proto"
     "google/bigtable/v2/bigtable.proto"
     "google/bigtable/v2/data.proto"
+    "google/cloud/bigquery/v2/model_reference.proto"
+    "google/cloud/bigquery/v2/standard_sql.proto"
+    "google/cloud/bigquery/v2/model.proto"
+    "google/cloud/bigquery/storage/v1beta1/read_options.proto"
+    "google/cloud/bigquery/storage/v1beta1/storage.proto"
+    "google/cloud/bigquery/storage/v1beta1/avro.proto"
+    "google/cloud/bigquery/storage/v1beta1/table_reference.proto"
+    "google/cloud/bigquery/storage/v1beta1/arrow.proto"
     "google/spanner/admin/database/v1/spanner_database_admin.proto"
     "google/spanner/admin/instance/v1/spanner_instance_admin.proto"
     "google/spanner/v1/keys.proto"
@@ -217,6 +225,26 @@ googleapis_cpp_add_library("google/devtools/cloudtrace/v2/tracing.proto"
                            rpc_status_protos)
 
 google_cloud_cpp_grpcpp_library(
+    googleapis_cpp_cloud_bigquery_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/model_reference.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/standard_sql.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/model.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/read_options.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/storage.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/avro.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/table_reference.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/arrow.proto"
+    PROTO_PATH_DIRECTORIES
+    "${GOOGLEAPIS_CPP_SOURCE}"
+    "${PROTO_INCLUDE_DIR}")
+googleapis_cpp_set_version_and_alias(cloud_bigquery_protos)
+target_link_libraries(googleapis_cpp_cloud_bigquery_protos
+                      PUBLIC googleapis-c++::api_annotations_protos
+                             googleapis-c++::api_http_protos
+                             googleapis-c++::api_client_protos
+                      PRIVATE googleapis_cpp_common_flags)
+
+google_cloud_cpp_grpcpp_library(
     googleapis_cpp_bigtable_protos
     "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/bigtable_instance_admin.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/bigtable/admin/v2/bigtable_table_admin.proto"
@@ -265,6 +293,7 @@ include(GNUInstallDirs)
 
 set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_bigtable_protos
+    googleapis_cpp_cloud_bigquery_protos
     googleapis_cpp_spanner_protos
     googleapis_cpp_longrunning_operations_protos
     googleapis_cpp_api_http_protos
@@ -360,6 +389,7 @@ set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
 # need to add the separator ourselves.
 string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
               "googleapis_cpp_bigtable_protos"
+              " googleapis_cpp_bigquery_protos"
               " googleapis_cpp_iam_v1_iam_policy_protos"
               " googleapis_cpp_iam_v1_options_protos"
               " googleapis_cpp_iam_v1_policy_protos"
