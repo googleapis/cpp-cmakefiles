@@ -19,7 +19,15 @@
 
 set -eu
 
-# For bigtable protos
+# For BigQuery protos
+cp -R /home/build/cpp-cmakefiles/ci/test-install/bigquery \
+  /home/build/test-install-bigquery
+cd /home/build/test-install-bigquery
+cmake -H. -Bcmake-out
+cmake --build cmake-out -- -j "$(nproc)"
+cmake-out/utilize-googleapis
+
+# For Bigtable protos
 cp -R /home/build/cpp-cmakefiles/ci/test-install/bigtable \
   /home/build/test-install-bigtable
 cd /home/build/test-install-bigtable
