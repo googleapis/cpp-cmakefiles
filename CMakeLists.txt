@@ -39,10 +39,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # downloaded from GitHub.
 set(
     GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-    "https://github.com/googleapis/googleapis/archive/9c9f778aedde02f9826d2ae5d0f9c96409ba0f25.tar.gz"
+    "https://github.com/googleapis/googleapis/archive/c6e62c7e5e61e6dae7fdc3bc3de81f60e6a9445c.tar.gz"
     )
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
-    "13af135d8cc9b81b47d6fbfc258fe790a151956d06e01fd16671aa49fe536ab1")
+    "33520d6ac51fbb2ca136c06b32b5f5f04f9b5ae8596b161dbe0ae05b1927b4de")
 
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
@@ -52,6 +52,7 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/api/annotations.proto"
     "google/api/auth.proto"
     "google/api/client.proto"
+    "google/api/field_behavior.proto"
     "google/api/label.proto"
     "google/api/launch_stage.proto"
     "google/api/metric.proto"
@@ -73,14 +74,20 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/bigtable/admin/v2/table.proto"
     "google/bigtable/v2/bigtable.proto"
     "google/bigtable/v2/data.proto"
-    "google/cloud/bigquery/v2/model_reference.proto"
-    "google/cloud/bigquery/v2/standard_sql.proto"
-    "google/cloud/bigquery/v2/model.proto"
+    "google/cloud/bigquery/connection/v1beta1/connection.proto"
+    "google/cloud/bigquery/datatransfer/v1/datasource.proto"
+    "google/cloud/bigquery/datatransfer/v1/datatransfer.proto"
+    "google/cloud/bigquery/datatransfer/v1/transfer.proto"
+    "google/cloud/bigquery/logging/v1/audit_data.proto"
+    "google/cloud/bigquery/storage/v1beta1/arrow.proto"
+    "google/cloud/bigquery/storage/v1beta1/avro.proto"
     "google/cloud/bigquery/storage/v1beta1/read_options.proto"
     "google/cloud/bigquery/storage/v1beta1/storage.proto"
-    "google/cloud/bigquery/storage/v1beta1/avro.proto"
     "google/cloud/bigquery/storage/v1beta1/table_reference.proto"
-    "google/cloud/bigquery/storage/v1beta1/arrow.proto"
+    "google/cloud/bigquery/v2/encryption_config.proto"
+    "google/cloud/bigquery/v2/model.proto"
+    "google/cloud/bigquery/v2/model_reference.proto"
+    "google/cloud/bigquery/v2/standard_sql.proto"
     "google/spanner/admin/database/v1/spanner_database_admin.proto"
     "google/spanner/admin/instance/v1/spanner_instance_admin.proto"
     "google/spanner/v1/keys.proto"
@@ -189,6 +196,7 @@ googleapis_cpp_add_library("google/api/http.proto")
 googleapis_cpp_add_library("google/api/annotations.proto" api_http_protos)
 googleapis_cpp_add_library("google/api/auth.proto" api_annotations_protos)
 googleapis_cpp_add_library("google/api/client.proto")
+googleapis_cpp_add_library("google/api/field_behavior.proto")
 googleapis_cpp_add_library("google/api/label.proto")
 googleapis_cpp_add_library("google/api/launch_stage.proto")
 googleapis_cpp_add_library("google/api/metric.proto" api_launch_stage_protos
@@ -211,6 +219,7 @@ googleapis_cpp_add_library("google/iam/v1/policy.proto"
 googleapis_cpp_add_library("google/iam/v1/iam_policy.proto"
                            api_annotations_protos
                            api_client_protos
+                           api_field_behavior_protos
                            iam_v1_options_protos
                            iam_v1_policy_protos)
 
@@ -226,14 +235,20 @@ googleapis_cpp_add_library("google/devtools/cloudtrace/v2/tracing.proto"
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_cloud_bigquery_protos
-    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/model_reference.proto"
-    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/standard_sql.proto"
-    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/model.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/connection/v1beta1/connection.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/datatransfer/v1/datasource.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/datatransfer/v1/datatransfer.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/datatransfer/v1/transfer.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/logging/v1/audit_data.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/arrow.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/avro.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/read_options.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/storage.proto"
-    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/avro.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/table_reference.proto"
-    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/storage/v1beta1/arrow.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/encryption_config.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/model.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/model_reference.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/v2/standard_sql.proto"
     PROTO_PATH_DIRECTORIES
     "${GOOGLEAPIS_CPP_SOURCE}"
     "${PROTO_INCLUDE_DIR}")
@@ -241,7 +256,10 @@ googleapis_cpp_set_version_and_alias(cloud_bigquery_protos)
 target_link_libraries(googleapis_cpp_cloud_bigquery_protos
                       PUBLIC googleapis-c++::api_annotations_protos
                              googleapis-c++::api_http_protos
+                             googleapis-c++::api_field_behavior_protos
                              googleapis-c++::api_client_protos
+                             googleapis-c++::iam_v1_iam_policy_protos
+                             googleapis-c++::rpc_status_protos
                       PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
@@ -300,6 +318,7 @@ set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_api_annotations_protos
     googleapis_cpp_api_auth_protos
     googleapis_cpp_api_client_protos
+    googleapis_cpp_api_field_behavior_protos
     googleapis_cpp_api_resource_protos
     googleapis_cpp_devtools_cloudtrace_v2_trace_protos
     googleapis_cpp_devtools_cloudtrace_v2_tracing_protos
@@ -396,6 +415,8 @@ string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
               " googleapis_cpp_longrunning_operations_protos"
               " googleapis_cpp_api_auth_protos"
               " googleapis_cpp_api_annotations_protos"
+              " googleapis_cpp_api_client_protos"
+              " googleapis_cpp_api_field_behavior_protos"
               " googleapis_cpp_api_http_protos"
               " googleapis_cpp_rpc_status_protos"
               " googleapis_cpp_rpc_error_details_protos"

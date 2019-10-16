@@ -23,11 +23,13 @@ foreach (_target
          api_annotations
          api_auth
          api_client
+         api_field_behavior
          api_http
          api_resource
          bigtable
-	 devtools_cloudtrace_v2_trace
-	 devtools_cloudtrace_v2_tracing
+         cloud_bigquery
+         devtools_cloudtrace_v2_trace
+         devtools_cloudtrace_v2_tracing
          iam_v1_iam_policy
          iam_v1_options
          iam_v1_policy
