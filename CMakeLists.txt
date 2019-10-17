@@ -99,7 +99,7 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/spanner/v1/type.proto")
 
 set(GOOGLEAPIS_CPP_BYPRODUCTS)
-foreach (proto ${GOOGLEAPIS_PROTO_FILES})
+foreach (proto ${GOOGLEAPIS_CPP_PROTO_FILES})
     list(APPEND GOOGLEAPIS_CPP_BYPRODUCTS "${GOOGLEAPIS_CPP_SOURCE}/${proto}")
 endforeach ()
 
