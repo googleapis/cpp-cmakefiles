@@ -58,6 +58,10 @@ if [[ "${CODE_COVERAGE:-}" == "yes" ]]; then
     "-DCMAKE_BUILD_TYPE=Coverage")
 fi
 
+if [[ "${USE_NINJA:-}" == "yes" ]]; then
+  cmake_flags+=( "-GNinja" )
+fi
+
 # Avoid unbound variable error with older bash
 if [[ "${#cmake_flags[@]}" == 0 ]]; then
   cmake "-H${SOURCE_DIR}" "-B${BINARY_DIR}"

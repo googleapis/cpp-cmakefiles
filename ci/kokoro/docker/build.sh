@@ -78,6 +78,9 @@ elif [[ "${BUILD_NAME}" = "clang-3.8" ]]; then
   export DISTRO_VERSION=16.04
   export CC=clang
   export CXX=clang++
+elif [[ "${BUILD_NAME}" = "ninja" ]]; then
+  # Compiling with Ninja can catch bugs that may not be caught using Make.
+  export USE_NINJA=yes
 else
   echo "Unknown BUILD_NAME (${BUILD_NAME}). Fix the Kokoro .cfg file."
   exit 1
@@ -210,6 +213,10 @@ docker_flags=(
     # If set to 'yes', run compile with code coverage flags. Currently only the
     # CMake builds use this flag.
     "--env" "CODE_COVERAGE=${CODE_COVERAGE:-}"
+
+    # If set to 'yes', use Ninja as the CMake generator. Ninja is more strict
+    # that Make and can detect errors in your CMake files, it is also faster.
+    "--env" "USE_NINJA=${USE_NINJA:-}"
 
     # If set, pass -DGOOGLE_CLOUD_CPP_CXX_STANDARD=<value> to CMake.
     "--env" "GOOGLE_CLOUD_CPP_CXX_STANDARD=${GOOGLE_CLOUD_CPP_CXX_STANDARD:-}"
