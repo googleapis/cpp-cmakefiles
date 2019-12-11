@@ -21,7 +21,7 @@ set(PACKAGE_BUGREPORT "https://github.com/googleapis/google-cloud-cpp/issues")
 project(googleapis-cpp-protos CXX C)
 
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR 0)
-set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 2)
+set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 3)
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH 0)
 
 string(CONCAT GOOGLE_APIS_CPP_PROTOS_VERSION
@@ -39,10 +39,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # downloaded from GitHub.
 set(
     GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-    "https://github.com/googleapis/googleapis/archive/c6e62c7e5e61e6dae7fdc3bc3de81f60e6a9445c.tar.gz"
+    "https://github.com/googleapis/googleapis/archive/19c4589a3cb44b3679f7b3fba88365b3d055d5f8.tar.gz"
     )
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
-    "33520d6ac51fbb2ca136c06b32b5f5f04f9b5ae8596b161dbe0ae05b1927b4de")
+    "ef455e46cfb967962aef30248f1a2a69bc78b041e89b04644e24e7844f0215c4")
 
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
@@ -75,7 +75,6 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/bigtable/v2/bigtable.proto"
     "google/bigtable/v2/data.proto"
     "google/cloud/bigquery/connection/v1beta1/connection.proto"
-    "google/cloud/bigquery/datatransfer/v1/datasource.proto"
     "google/cloud/bigquery/datatransfer/v1/datatransfer.proto"
     "google/cloud/bigquery/datatransfer/v1/transfer.proto"
     "google/cloud/bigquery/logging/v1/audit_data.proto"
@@ -236,7 +235,6 @@ googleapis_cpp_add_library("google/devtools/cloudtrace/v2/tracing.proto"
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_cloud_bigquery_protos
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/connection/v1beta1/connection.proto"
-    "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/datatransfer/v1/datasource.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/datatransfer/v1/datatransfer.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/datatransfer/v1/transfer.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/cloud/bigquery/logging/v1/audit_data.proto"
