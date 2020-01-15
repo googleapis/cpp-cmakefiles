@@ -34,6 +34,7 @@ foreach (_target
          iam_v1_options
          iam_v1_policy
          longrunning_operations
+         pubsub
          rpc_error_details
          rpc_status
          spanner

@@ -87,6 +87,7 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/cloud/bigquery/v2/model.proto"
     "google/cloud/bigquery/v2/model_reference.proto"
     "google/cloud/bigquery/v2/standard_sql.proto"
+    "google/pubsub/v1/pubsub.proto"
     "google/spanner/admin/database/v1/spanner_database_admin.proto"
     "google/spanner/admin/instance/v1/spanner_instance_admin.proto"
     "google/spanner/v1/keys.proto"
@@ -282,6 +283,18 @@ target_link_libraries(googleapis_cpp_bigtable_protos
                       PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
+    googleapis_cpp_pubsub_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/pubsub/v1/pubsub.proto"
+    PROTO_PATH_DIRECTORIES
+    "${GOOGLEAPIS_CPP_SOURCE}"
+    "${PROTO_INCLUDE_DIR}")
+googleapis_cpp_set_version_and_alias(pubsub_protos)
+target_link_libraries(googleapis_cpp_pubsub_protos
+                      PUBLIC googleapis-c++::api_annotations_protos
+                             googleapis-c++::api_client_protos
+                      PRIVATE googleapis_cpp_common_flags)
+
+google_cloud_cpp_grpcpp_library(
     googleapis_cpp_spanner_protos
     "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/database/v1/spanner_database_admin.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/instance/v1/spanner_instance_admin.proto"
@@ -310,6 +323,7 @@ include(GNUInstallDirs)
 set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_bigtable_protos
     googleapis_cpp_cloud_bigquery_protos
+    googleapis_cpp_pubsub_protos
     googleapis_cpp_spanner_protos
     googleapis_cpp_longrunning_operations_protos
     googleapis_cpp_api_http_protos
