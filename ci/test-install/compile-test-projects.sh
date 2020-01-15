@@ -19,13 +19,7 @@
 
 set -eu
 
-# For BigQuery protos
-cp -R /home/build/cpp-cmakefiles/ci/test-install/bigquery \
-  /home/build/test-install-bigquery
-cd /home/build/test-install-bigquery
-cmake -H. -Bcmake-out
-cmake --build cmake-out -- -j "$(nproc)"
-cmake-out/utilize-googleapis
+# Verify the installed CMake config and pkgconfig files are actually usable.
 
 # For Bigtable protos
 cp -R /home/build/cpp-cmakefiles/ci/test-install/bigtable \
@@ -34,6 +28,18 @@ cd /home/build/test-install-bigtable
 cmake -H. -Bcmake-out
 cmake --build cmake-out -- -j "$(nproc)"
 cmake-out/utilize-googleapis
+env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
+    make
+
+# For BigQuery protos
+cp -R /home/build/cpp-cmakefiles/ci/test-install/bigquery \
+  /home/build/test-install-bigquery
+cd /home/build/test-install-bigquery
+cmake -H. -Bcmake-out
+cmake --build cmake-out -- -j "$(nproc)"
+cmake-out/utilize-googleapis
+env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
+    make
 
 # For spanner protos
 cp -R /home/build/cpp-cmakefiles/ci/test-install/spanner \
@@ -42,3 +48,5 @@ cd /home/build/test-install-spanner
 cmake -H. -Bcmake-out
 cmake --build cmake-out -- -j "$(nproc)"
 cmake-out/utilize-googleapis
+env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
+    make
