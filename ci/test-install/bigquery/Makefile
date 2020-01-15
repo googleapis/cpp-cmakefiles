@@ -20,8 +20,7 @@
 
 # The CXX, CXXFLAGS and CXXLD variables are hard-coded. These values work for
 # our tests, but applications would typically make them configurable parameters.
-CXX=g++
-CXXFLAGS=-std=c++11
+CXX=g++ -std=c++11
 CXXLD=$(CXX)
 
 all: main
