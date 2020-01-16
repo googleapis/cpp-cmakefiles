@@ -21,32 +21,27 @@ set -eu
 
 # Verify the installed CMake config and pkgconfig files are actually usable.
 
-# For Bigtable protos
-cp -R /home/build/cpp-cmakefiles/ci/test-install/bigtable \
-  /home/build/test-install-bigtable
-cd /home/build/test-install-bigtable
-cmake -H. -Bcmake-out
-cmake --build cmake-out -- -j "$(nproc)"
-cmake-out/utilize-googleapis
-env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
-    make
-
-# For BigQuery protos
-cp -R /home/build/cpp-cmakefiles/ci/test-install/bigquery \
-  /home/build/test-install-bigquery
-cd /home/build/test-install-bigquery
-cmake -H. -Bcmake-out
-cmake --build cmake-out -- -j "$(nproc)"
-cmake-out/utilize-googleapis
-env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
-    make
-
-# For spanner protos
-cp -R /home/build/cpp-cmakefiles/ci/test-install/spanner \
-  /home/build/test-install-spanner
-cd /home/build/test-install-spanner
-cmake -H. -Bcmake-out
-cmake --build cmake-out -- -j "$(nproc)"
-cmake-out/utilize-googleapis
-env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
-    make
+for subdir in bigquery bigtable pubsub spanner; do
+  # Compile a test program using CMake.
+  echo "================================================================"
+  echo "Testing ${subdir} $(date) with CMake"
+  echo "================================================================"
+  src_dir="/home/build/cpp-cmakefiles/ci/test-install/${subdir}"
+  cmake_dir="/home/build/test-cmake-${subdir}"
+  make_dir="/home/build/test-make-${subdir}"
+  cmake -H"${src_dir}" -B"${cmake_dir}"
+  cmake --build "${cmake_dir}" -- -j "$(nproc)"
+  # Verify the generated program is runnable
+  "${cmake_dir}/utilize-googleapis"
+  echo "================================================================"
+  echo "Testing ${subdir} $(date) with Make"
+  echo "================================================================"
+  cp -R "${src_dir}" "${make_dir}"
+  cd "${make_dir}"
+  # With Make we may need to set PKG_CONFIG_PATH because the code is installed
+  # in /usr/local and that is not a default search location in some distros.
+  env PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/local/lib/pkgconfig \
+        make
+  # Verify the generated program is runnable
+  "${make_dir}/main"
+done
