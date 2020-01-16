@@ -50,6 +50,10 @@ RUN cmake -H. -Bcmake-out -DBUILD_SHARED_LIBS=yes
 RUN cmake --build cmake-out -- -j $(nproc)
 WORKDIR /home/build/cpp-cmakefiles/cmake-out
 RUN cmake --build . --target install
+# The share libraries will install in `/usr/local/lib64` we need that directory
+# in the ld.so cache:
+RUN echo "/usr/local/lib64" | tee /etc/ld.so.conf.d/local.conf
+RUN ldconfig
 # ```
 
 ## [END INSTALL.md]
