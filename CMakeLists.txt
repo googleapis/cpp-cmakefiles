@@ -420,7 +420,7 @@ set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
 # need to add the separator ourselves.
 string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
               "googleapis_cpp_bigtable_protos"
-              " googleapis_cpp_bigquery_protos"
+              " googleapis_cpp_cloud_bigquery_protos"
               " googleapis_cpp_iam_v1_iam_policy_protos"
               " googleapis_cpp_iam_v1_options_protos"
               " googleapis_cpp_iam_v1_policy_protos"
