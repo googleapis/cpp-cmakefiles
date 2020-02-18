@@ -227,7 +227,11 @@ googleapis_cpp_add_library("google/longrunning/operations.proto"
                            api_annotations_protos rpc_status_protos)
 
 googleapis_cpp_add_library("google/devtools/cloudtrace/v2/trace.proto"
-                           api_annotations_protos rpc_status_protos)
+                           api_annotations_protos
+                           api_client_protos
+                           api_field_behavior_protos
+                           api_resource_protos
+                           rpc_status_protos)
 googleapis_cpp_add_library("google/devtools/cloudtrace/v2/tracing.proto"
                            devtools_cloudtrace_v2_trace_protos
                            api_annotations_protos
