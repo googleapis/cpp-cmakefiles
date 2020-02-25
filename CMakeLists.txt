@@ -208,8 +208,13 @@ googleapis_cpp_add_library("google/iam/v1/policy.proto" api_annotations_protos
                            type_expr_protos)
 
 googleapis_cpp_add_library(
-    "google/iam/v1/iam_policy.proto" api_annotations_protos api_client_protos
-    api_field_behavior_protos iam_v1_options_protos iam_v1_policy_protos)
+    "google/iam/v1/iam_policy.proto"
+    api_annotations_protos
+    api_client_protos
+    api_field_behavior_protos
+    api_resource_protos
+    iam_v1_options_protos
+    iam_v1_policy_protos)
 
 googleapis_cpp_add_library(
     "google/longrunning/operations.proto" api_annotations_protos
