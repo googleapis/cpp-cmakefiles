@@ -38,6 +38,7 @@ foreach (_target
          rpc_error_details
          rpc_status
          spanner
+         storage
          type_expr)
     set(scoped_name "googleapis-c++::${_target}_protos")
     set(imported_name "googleapis_cpp_${_target}_protos")
