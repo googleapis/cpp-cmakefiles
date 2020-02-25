@@ -96,7 +96,9 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/spanner/v1/result_set.proto"
     "google/spanner/v1/spanner.proto"
     "google/spanner/v1/transaction.proto"
-    "google/spanner/v1/type.proto")
+    "google/spanner/v1/type.proto"
+    "google/storage/v1/storage.proto"
+    "google/storage/v1/storage_resources.proto")
 
 set(GOOGLEAPIS_CPP_BYPRODUCTS)
 foreach (proto ${GOOGLEAPIS_CPP_PROTO_FILES})
@@ -325,6 +327,23 @@ target_link_libraries(
            googleapis-c++::rpc_status_protos
     PRIVATE googleapis_cpp_common_flags)
 
+google_cloud_cpp_grpcpp_library(
+    googleapis_cpp_storage_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/storage/v1/storage.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/storage/v1/storage_resources.proto"
+    PROTO_PATH_DIRECTORIES
+    "${GOOGLEAPIS_CPP_SOURCE}"
+    "${PROTO_INCLUDE_DIR}")
+googleapis_cpp_set_version_and_alias(storage_protos)
+target_link_libraries(
+    googleapis_cpp_storage_protos
+    PUBLIC googleapis-c++::api_annotations_protos
+           googleapis-c++::api_client_protos
+           googleapis-c++::api_field_behavior_protos
+           googleapis-c++::iam_v1_iam_policy_protos
+           googleapis-c++::iam_v1_policy_protos
+    PRIVATE googleapis_cpp_common_flags)
+
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
 include(GNUInstallDirs)
@@ -334,6 +353,7 @@ set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_cloud_bigquery_protos
     googleapis_cpp_pubsub_protos
     googleapis_cpp_spanner_protos
+    googleapis_cpp_storage_protos
     googleapis_cpp_longrunning_operations_protos
     googleapis_cpp_api_http_protos
     googleapis_cpp_api_annotations_protos
@@ -425,6 +445,8 @@ string(
     CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
            "googleapis_cpp_bigtable_protos"
            " googleapis_cpp_cloud_bigquery_protos"
+           " googleapis_pubsub_protos"
+           " googleapis_cpp_storage_protos"
            " googleapis_cpp_iam_v1_iam_policy_protos"
            " googleapis_cpp_iam_v1_options_protos"
            " googleapis_cpp_iam_v1_policy_protos"
