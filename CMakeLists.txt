@@ -24,12 +24,13 @@ set(GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR 0)
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 5)
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH 0)
 
-string(CONCAT GOOGLE_APIS_CPP_PROTOS_VERSION
-              "${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR}"
-              "."
-              "${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR}"
-              "."
-              "${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH}")
+string(
+    CONCAT GOOGLE_APIS_CPP_PROTOS_VERSION
+           "${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR}"
+           "."
+           "${GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR}"
+           "."
+           "${GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH}")
 
 # Configure the compiler options, we will be using C++11 features.
 set(CMAKE_CXX_STANDARD 11)
@@ -37,12 +38,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Give application developers a hook to configure the version and hash
 # downloaded from GitHub.
-set(
-    GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-    "https://github.com/googleapis/googleapis/archive/19c4589a3cb44b3679f7b3fba88365b3d055d5f8.tar.gz"
-    )
+set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
+    "https://github.com/googleapis/googleapis/archive/0b1876b35e98f560f9c9ca9797955f020238a092.tar.gz"
+)
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
-    "ef455e46cfb967962aef30248f1a2a69bc78b041e89b04644e24e7844f0215c4")
+    "4b0db7279ddf0b9ec6a39fd741ef4694b20025fe38f7d98f1ab1ba224c417c2d")
 
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
@@ -104,16 +104,17 @@ foreach (proto ${GOOGLEAPIS_CPP_PROTO_FILES})
 endforeach ()
 
 include(ExternalProject)
-ExternalProject_Add(googleapis_download
-                    EXCLUDE_FROM_ALL ON
-                    PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
-                    URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
-                    URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
-                    CONFIGURE_COMMAND ""
-                    BUILD_COMMAND ""
-                    INSTALL_COMMAND ""
-                    BUILD_BYPRODUCTS ${GOOGLEAPIS_CPP_BYPRODUCTS}
-                    LOG_DOWNLOAD OFF)
+ExternalProject_Add(
+    googleapis_download
+    EXCLUDE_FROM_ALL ON
+    PREFIX "${CMAKE_BINARY_DIR}/external/googleapis"
+    URL ${GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL}
+    URL_HASH SHA256=${GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256}
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    BUILD_BYPRODUCTS ${GOOGLEAPIS_CPP_BYPRODUCTS}
+    LOG_DOWNLOAD OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(ProtobufTargets REQUIRED)
@@ -137,19 +138,12 @@ include(CompileProtos)
 google_cloud_cpp_add_protos_property()
 
 function (googleapis_cpp_short_name var proto)
-    string(REPLACE "google/"
-                   ""
-                   short_name
-                   "${proto}")
-    string(REPLACE "/"
-                   "_"
-                   short_name
-                   "${short_name}")
-    string(REPLACE ".proto"
-                   "_protos"
-                   short_name
-                   "${short_name}")
-    set("${var}" "${short_name}" PARENT_SCOPE)
+    string(REPLACE "google/" "" short_name "${proto}")
+    string(REPLACE "/" "_" short_name "${short_name}")
+    string(REPLACE ".proto" "_protos" short_name "${short_name}")
+    set("${var}"
+        "${short_name}"
+        PARENT_SCOPE)
 endfunction ()
 
 # Create a single source proto library.
@@ -158,11 +152,10 @@ endfunction ()
 # * (optional) ARGN: proto libraries the new library depends on.
 function (googleapis_cpp_add_library proto)
     googleapis_cpp_short_name(short_name "${proto}")
-    google_cloud_cpp_grpcpp_library(googleapis_cpp_${short_name}
-                                    "${GOOGLEAPIS_CPP_SOURCE}/${proto}"
-                                    PROTO_PATH_DIRECTORIES
-                                    "${GOOGLEAPIS_CPP_SOURCE}"
-                                    "${PROTO_INCLUDE_DIR}")
+    google_cloud_cpp_grpcpp_library(
+        googleapis_cpp_${short_name} "${GOOGLEAPIS_CPP_SOURCE}/${proto}"
+        PROTO_PATH_DIRECTORIES "${GOOGLEAPIS_CPP_SOURCE}"
+        "${PROTO_INCLUDE_DIR}")
 
     googleapis_cpp_set_version_and_alias("${short_name}")
 
@@ -175,34 +168,34 @@ function (googleapis_cpp_add_library proto)
         target_link_libraries("googleapis_cpp_${short_name}"
                               PRIVATE googleapis_cpp_common_flags)
     else ()
-        target_link_libraries("googleapis_cpp_${short_name}"
-                              PUBLIC ${public_deps}
-                              PRIVATE googleapis_cpp_common_flags)
+        target_link_libraries(
+            "googleapis_cpp_${short_name}"
+            PUBLIC ${public_deps}
+            PRIVATE googleapis_cpp_common_flags)
     endif ()
 endfunction ()
 
 function (googleapis_cpp_set_version_and_alias short_name)
     add_dependencies("googleapis_cpp_${short_name}" googleapis_download)
-    set_target_properties("googleapis_cpp_${short_name}"
-                          PROPERTIES VERSION
-                                     "${GOOGLE_APIS_CPP_PROTOS_VERSION}"
-                                     SOVERSION
-                                     ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR})
+    set_target_properties(
+        "googleapis_cpp_${short_name}"
+        PROPERTIES VERSION "${GOOGLE_APIS_CPP_PROTOS_VERSION}"
+                   SOVERSION ${GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR})
     add_library("googleapis-c++::${short_name}" ALIAS
                 "googleapis_cpp_${short_name}")
 endfunction ()
 
 googleapis_cpp_add_library("google/api/http.proto")
+googleapis_cpp_add_library("google/api/metric.proto" api_launch_stage_protos
+                           api_label_protos)
+googleapis_cpp_add_library("google/api/monitored_resource.proto"
+                           api_launch_stage_protos api_label_protos)
 googleapis_cpp_add_library("google/api/annotations.proto" api_http_protos)
 googleapis_cpp_add_library("google/api/auth.proto" api_annotations_protos)
 googleapis_cpp_add_library("google/api/client.proto")
 googleapis_cpp_add_library("google/api/field_behavior.proto")
 googleapis_cpp_add_library("google/api/label.proto")
 googleapis_cpp_add_library("google/api/launch_stage.proto")
-googleapis_cpp_add_library("google/api/metric.proto" api_launch_stage_protos
-                           api_label_protos)
-googleapis_cpp_add_library("google/api/monitored_resource.proto"
-                           api_launch_stage_protos api_label_protos)
 googleapis_cpp_add_library("google/api/resource.proto")
 
 googleapis_cpp_add_library("google/type/expr.proto")
@@ -211,31 +204,29 @@ googleapis_cpp_add_library("google/rpc/error_details.proto")
 googleapis_cpp_add_library("google/rpc/status.proto" rpc_error_details_protos)
 
 googleapis_cpp_add_library("google/iam/v1/options.proto" api_annotations_protos)
-googleapis_cpp_add_library("google/iam/v1/policy.proto"
-                           api_annotations_protos
-                           api_resource_protos
+googleapis_cpp_add_library("google/iam/v1/policy.proto" api_annotations_protos
                            type_expr_protos)
 
-googleapis_cpp_add_library("google/iam/v1/iam_policy.proto"
-                           api_annotations_protos
-                           api_client_protos
-                           api_field_behavior_protos
-                           iam_v1_options_protos
-                           iam_v1_policy_protos)
+googleapis_cpp_add_library(
+    "google/iam/v1/iam_policy.proto"
+    api_annotations_protos
+    api_client_protos
+    api_field_behavior_protos
+    api_resource_protos
+    iam_v1_options_protos
+    iam_v1_policy_protos)
 
-googleapis_cpp_add_library("google/longrunning/operations.proto"
-                           api_annotations_protos rpc_status_protos)
+googleapis_cpp_add_library(
+    "google/longrunning/operations.proto" api_annotations_protos
+    api_client_protos rpc_status_protos)
 
-googleapis_cpp_add_library("google/devtools/cloudtrace/v2/trace.proto"
-                           api_annotations_protos
-                           api_client_protos
-                           api_field_behavior_protos
-                           api_resource_protos
-                           rpc_status_protos)
-googleapis_cpp_add_library("google/devtools/cloudtrace/v2/tracing.proto"
-                           devtools_cloudtrace_v2_trace_protos
-                           api_annotations_protos
-                           rpc_status_protos)
+googleapis_cpp_add_library(
+    "google/devtools/cloudtrace/v2/trace.proto" api_annotations_protos
+    api_field_behavior_protos api_resource_protos rpc_status_protos)
+googleapis_cpp_add_library(
+    "google/devtools/cloudtrace/v2/tracing.proto"
+    devtools_cloudtrace_v2_trace_protos api_annotations_protos
+    api_client_protos api_field_behavior_protos rpc_status_protos)
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_cloud_bigquery_protos
@@ -256,14 +247,17 @@ google_cloud_cpp_grpcpp_library(
     "${GOOGLEAPIS_CPP_SOURCE}"
     "${PROTO_INCLUDE_DIR}")
 googleapis_cpp_set_version_and_alias(cloud_bigquery_protos)
-target_link_libraries(googleapis_cpp_cloud_bigquery_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::api_http_protos
-                             googleapis-c++::api_field_behavior_protos
-                             googleapis-c++::api_client_protos
-                             googleapis-c++::iam_v1_iam_policy_protos
-                             googleapis-c++::rpc_status_protos
-                      PRIVATE googleapis_cpp_common_flags)
+target_link_libraries(
+    googleapis_cpp_cloud_bigquery_protos
+    PUBLIC googleapis-c++::api_annotations_protos
+           googleapis-c++::api_client_protos
+           googleapis-c++::api_field_behavior_protos
+           googleapis-c++::api_resource_protos
+           googleapis-c++::iam_v1_iam_policy_protos
+           googleapis-c++::iam_v1_policy_protos
+           googleapis-c++::rpc_status_protos
+           googleapis-c++::api_http_protos
+    PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_bigtable_protos
@@ -278,25 +272,31 @@ google_cloud_cpp_grpcpp_library(
     "${GOOGLEAPIS_CPP_SOURCE}"
     "${PROTO_INCLUDE_DIR}")
 googleapis_cpp_set_version_and_alias(bigtable_protos)
-target_link_libraries(googleapis_cpp_bigtable_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::api_auth_protos
-                             googleapis-c++::longrunning_operations_protos
-                             googleapis-c++::rpc_status_protos
-                             googleapis-c++::iam_v1_iam_policy_protos
-                      PRIVATE googleapis_cpp_common_flags)
+target_link_libraries(
+    googleapis_cpp_bigtable_protos
+    PUBLIC googleapis-c++::api_annotations_protos
+           googleapis-c++::api_client_protos
+           googleapis-c++::api_field_behavior_protos
+           googleapis-c++::api_resource_protos
+           googleapis-c++::iam_v1_iam_policy_protos
+           googleapis-c++::iam_v1_policy_protos
+           googleapis-c++::longrunning_operations_protos
+           googleapis-c++::rpc_status_protos
+           googleapis-c++::api_auth_protos
+    PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_pubsub_protos
     "${GOOGLEAPIS_CPP_SOURCE}/google/pubsub/v1/pubsub.proto"
-    PROTO_PATH_DIRECTORIES
-    "${GOOGLEAPIS_CPP_SOURCE}"
-    "${PROTO_INCLUDE_DIR}")
+    PROTO_PATH_DIRECTORIES "${GOOGLEAPIS_CPP_SOURCE}" "${PROTO_INCLUDE_DIR}")
 googleapis_cpp_set_version_and_alias(pubsub_protos)
-target_link_libraries(googleapis_cpp_pubsub_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::api_client_protos
-                      PRIVATE googleapis_cpp_common_flags)
+target_link_libraries(
+    googleapis_cpp_pubsub_protos
+    PUBLIC googleapis-c++::api_annotations_protos
+           googleapis-c++::api_client_protos
+           googleapis-c++::api_field_behavior_protos
+           googleapis-c++::api_resource_protos
+    PRIVATE googleapis_cpp_common_flags)
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_spanner_protos
@@ -313,12 +313,17 @@ google_cloud_cpp_grpcpp_library(
     "${GOOGLEAPIS_CPP_SOURCE}"
     "${PROTO_INCLUDE_DIR}")
 googleapis_cpp_set_version_and_alias(spanner_protos)
-target_link_libraries(googleapis_cpp_spanner_protos
-                      PUBLIC googleapis-c++::api_annotations_protos
-                             googleapis-c++::longrunning_operations_protos
-                             googleapis-c++::rpc_status_protos
-                             googleapis-c++::iam_v1_iam_policy_protos
-                      PRIVATE googleapis_cpp_common_flags)
+target_link_libraries(
+    googleapis_cpp_spanner_protos
+    PUBLIC googleapis-c++::api_annotations_protos
+           googleapis-c++::api_client_protos
+           googleapis-c++::api_field_behavior_protos
+           googleapis-c++::api_resource_protos
+           googleapis-c++::iam_v1_iam_policy_protos
+           googleapis-c++::iam_v1_policy_protos
+           googleapis-c++::longrunning_operations_protos
+           googleapis-c++::rpc_status_protos
+    PRIVATE googleapis_cpp_common_flags)
 
 # Install the libraries and headers in the locations determined by
 # GNUInstallDirs
@@ -345,12 +350,13 @@ set(googleapis_cpp_installed_libraries_list
     googleapis_cpp_rpc_status_protos
     googleapis_cpp_type_expr_protos)
 
-install(TARGETS ${googleapis_cpp_installed_libraries_list}
-                googleapis_cpp_common_flags
-        EXPORT googleapis-targets
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(
+    TARGETS ${googleapis_cpp_installed_libraries_list}
+            googleapis_cpp_common_flags
+    EXPORT googleapis-targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 foreach (target ${googleapis_cpp_installed_libraries_list})
     google_cloud_cpp_install_proto_library_headers("${target}")
@@ -372,14 +378,8 @@ set(GOOGLE_CLOUD_CPP_CONFIG_VERSION_PATCH
 
 # Use a function to create a scope for the variables.
 function (googleapis_cpp_install_pc target)
-    string(REPLACE "googleapis_cpp_"
-                   ""
-                   _short_name
-                   ${target})
-    string(REPLACE "_protos"
-                   ""
-                   _short_name
-                   ${_short_name})
+    string(REPLACE "googleapis_cpp_" "" _short_name ${target})
+    string(REPLACE "_protos" "" _short_name ${_short_name})
     set(GOOGLE_CLOUD_CPP_PC_NAME
         "The Google APIS C++ ${_short_name} Proto Library")
     set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION "Compiled proto for C++.")
@@ -389,21 +389,20 @@ function (googleapis_cpp_install_pc target)
     get_target_property(_target_deps ${target} LINK_LIBRARIES)
     foreach (dep ${_target_deps})
         if ("${dep}" MATCHES "^googleapis-c\\+\\+::")
-            string(REPLACE "googleapis-c++::"
-                           "googleapis_cpp_"
-                           dep
-                           "${dep}")
+            string(REPLACE "googleapis-c++::" "googleapis_cpp_" dep "${dep}")
             list(APPEND _target_pc_requires " " "${dep}")
         endif ()
     endforeach ()
     # These dependencies are required for all the googleapis-c++::* libraries.
-    list(APPEND _target_pc_requires
-                " grpc++"
-                " grpc"
-                " openssl"
-                " protobuf"
-                " zlib"
-                " libcares")
+    list(
+        APPEND
+        _target_pc_requires
+        " grpc++"
+        " grpc"
+        " openssl"
+        " protobuf"
+        " zlib"
+        " libcares")
     string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES ${_target_pc_requires})
     set(GOOGLE_CLOUD_CPP_PC_LIBS "-l${target}")
     configure_file("cmake/config.pc.in" "${target}.pc" @ONLY)
@@ -422,26 +421,27 @@ set(GOOGLE_CLOUD_CPP_PC_DESCRIPTION
     "Provides C++ APIs to access Google Cloud Platforms.")
 # Note the use of spaces, `string(JOIN)` is not available in cmake-3.5, so we
 # need to add the separator ourselves.
-string(CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
-              "googleapis_cpp_bigtable_protos"
-              " googleapis_cpp_cloud_bigquery_protos"
-              " googleapis_cpp_iam_v1_iam_policy_protos"
-              " googleapis_cpp_iam_v1_options_protos"
-              " googleapis_cpp_iam_v1_policy_protos"
-              " googleapis_cpp_longrunning_operations_protos"
-              " googleapis_cpp_api_auth_protos"
-              " googleapis_cpp_api_annotations_protos"
-              " googleapis_cpp_api_client_protos"
-              " googleapis_cpp_api_field_behavior_protos"
-              " googleapis_cpp_api_http_protos"
-              " googleapis_cpp_rpc_status_protos"
-              " googleapis_cpp_rpc_error_details_protos"
-              " grpc++"
-              " grpc"
-              " openssl"
-              " protobuf"
-              " zlib"
-              " libcares")
+string(
+    CONCAT GOOGLE_CLOUD_CPP_PC_REQUIRES
+           "googleapis_cpp_bigtable_protos"
+           " googleapis_cpp_cloud_bigquery_protos"
+           " googleapis_cpp_iam_v1_iam_policy_protos"
+           " googleapis_cpp_iam_v1_options_protos"
+           " googleapis_cpp_iam_v1_policy_protos"
+           " googleapis_cpp_longrunning_operations_protos"
+           " googleapis_cpp_api_auth_protos"
+           " googleapis_cpp_api_annotations_protos"
+           " googleapis_cpp_api_client_protos"
+           " googleapis_cpp_api_field_behavior_protos"
+           " googleapis_cpp_api_http_protos"
+           " googleapis_cpp_rpc_status_protos"
+           " googleapis_cpp_rpc_error_details_protos"
+           " grpc++"
+           " grpc"
+           " openssl"
+           " protobuf"
+           " zlib"
+           " libcares")
 set(GOOGLE_CLOUD_CPP_PC_LIBS "")
 configure_file("cmake/config.pc.in" "googleapis.pc" @ONLY)
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis.pc"
@@ -449,11 +449,12 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis.pc"
 
 # Create and install the CMake configuration files.
 configure_file("cmake/config.cmake.in" "googleapis-config.cmake" @ONLY)
-configure_file("cmake/config-version.cmake.in" "googleapis-config-version.cmake"
-               @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis-config.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/googleapis-config-version.cmake"
-              "${PROJECT_SOURCE_DIR}/cmake/FindgRPC.cmake"
-              "${PROJECT_SOURCE_DIR}/cmake/FindProtobufTargets.cmake"
-              "${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis")
+configure_file("cmake/config-version.cmake.in"
+               "googleapis-config-version.cmake" @ONLY)
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/googleapis-config.cmake"
+          "${CMAKE_CURRENT_BINARY_DIR}/googleapis-config-version.cmake"
+          "${PROJECT_SOURCE_DIR}/cmake/FindgRPC.cmake"
+          "${PROJECT_SOURCE_DIR}/cmake/FindProtobufTargets.cmake"
+          "${PROJECT_SOURCE_DIR}/cmake/CompileProtos.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/googleapis")
