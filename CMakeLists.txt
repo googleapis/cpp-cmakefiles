@@ -327,10 +327,6 @@ target_link_libraries(
            googleapis-c++::rpc_status_protos
     PRIVATE googleapis_cpp_common_flags)
 
-# for proto in "${protos[@]}"; do (cd cmake-build-
-# debug/external/googleapis/src/googleapis_download; grep -H '^import '
-# "${proto}" | grep -v google/protobuf); done | sed -e 's;google/;;g' -e
-# 's/:import "/ /' -e 's/";//' -e 's;/;_;g' -e 's/\.proto/_protos/g'
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_storage_protos
     "${GOOGLEAPIS_CPP_SOURCE}/google/storage/v1/storage.proto"
