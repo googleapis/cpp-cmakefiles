@@ -96,7 +96,9 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/spanner/v1/result_set.proto"
     "google/spanner/v1/spanner.proto"
     "google/spanner/v1/transaction.proto"
-    "google/spanner/v1/type.proto")
+    "google/spanner/v1/type.proto"
+    "google/storage/v1/storage.proto"
+    "google/storage/v1/storage_resources.proto")
 
 set(GOOGLEAPIS_CPP_BYPRODUCTS)
 foreach (proto ${GOOGLEAPIS_CPP_PROTO_FILES})
