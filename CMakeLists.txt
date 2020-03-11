@@ -39,10 +39,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Give application developers a hook to configure the version and hash
 # downloaded from GitHub.
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-    "https://github.com/googleapis/googleapis/archive/e9e90a787703ec5d388902e2cb796aaed3a385b4.tar.gz"
+    "https://github.com/googleapis/googleapis/archive/bf839ae632e0f263a729569e44be4b38b1c85f9c.tar.gz"
 )
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
-    "4c0ba761e943b818cc8b242ed05d0cfdaaac7c4035a43eeab0820461c77619f0")
+    "874a4ad1f65c346a8a73c91e78cca0d49e5da3be5a7e58a05d6b2c74bc331ac6")
 
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
@@ -88,6 +88,8 @@ set(GOOGLEAPIS_CPP_PROTO_FILES
     "google/cloud/bigquery/v2/model_reference.proto"
     "google/cloud/bigquery/v2/standard_sql.proto"
     "google/pubsub/v1/pubsub.proto"
+    "google/spanner/admin/database/v1/backup.proto"
+    "google/spanner/admin/database/v1/common.proto"
     "google/spanner/admin/database/v1/spanner_database_admin.proto"
     "google/spanner/admin/instance/v1/spanner_instance_admin.proto"
     "google/spanner/v1/keys.proto"
@@ -302,6 +304,8 @@ target_link_libraries(
 
 google_cloud_cpp_grpcpp_library(
     googleapis_cpp_spanner_protos
+    "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/database/v1/backup.proto"
+    "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/database/v1/common.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/database/v1/spanner_database_admin.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/admin/instance/v1/spanner_instance_admin.proto"
     "${GOOGLEAPIS_CPP_SOURCE}/google/spanner/v1/keys.proto"
