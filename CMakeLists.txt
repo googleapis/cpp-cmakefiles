@@ -39,10 +39,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Give application developers a hook to configure the version and hash
 # downloaded from GitHub.
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_URL
-    "https://github.com/googleapis/googleapis/archive/bf839ae632e0f263a729569e44be4b38b1c85f9c.tar.gz"
+    "https://github.com/googleapis/googleapis/archive/8bea81bfa461698981b3d3a488a95633d2f6e9ff.tar.gz"
 )
 set(GOOGLE_CLOUD_CPP_GOOGLEAPIS_SHA256
-    "874a4ad1f65c346a8a73c91e78cca0d49e5da3be5a7e58a05d6b2c74bc331ac6")
+    "2a4ac74574c14ab9e389f464bb0756c20be571bac172f8de1fe1bce343fac353")
 
 set(GOOGLEAPIS_CPP_SOURCE
     "${CMAKE_BINARY_DIR}/external/googleapis/src/googleapis_download")
