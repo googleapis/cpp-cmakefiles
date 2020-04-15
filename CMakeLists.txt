@@ -21,7 +21,7 @@ set(PACKAGE_BUGREPORT "https://github.com/googleapis/google-cloud-cpp/issues")
 project(googleapis-cpp-protos CXX C)
 
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_MAJOR 0)
-set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 8)
+set(GOOGLEAPIS_CPP_PROTOS_VERSION_MINOR 9)
 set(GOOGLEAPIS_CPP_PROTOS_VERSION_PATCH 0)
 
 string(
